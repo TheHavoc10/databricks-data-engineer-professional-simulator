@@ -1,0 +1,51 @@
+name: Publicar campus desde ZIP
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'databricks-data-engineer-professional-campus.zip'
+      - '.github/workflows/publish.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extraer y validar el campus
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from zipfile import ZipFile
+          source = Path("databricks-data-engineer-professional-campus.zip")
+          dest = Path("_site")
+          dest.mkdir(exist_ok=True)
+          if not source.exists():
+              raise SystemExit("Falta el archivo ZIP del campus en la raíz del repositorio.")
+          with ZipFile(source) as z:
+              for item in z.infolist():
+                  p = Path(item.filename)
+                  if p.is_absolute() or ".." in p.parts:
+                      raise SystemExit(f"Ruta no permitida en ZIP: {p}")
+              z.extractall(dest)
+          if not (dest / "index.html").exists():
+              raise SystemExit("El ZIP debe contener index.html en la raíz.")
+          (dest / ".nojekyll").touch()
+          print("Campus preparado:", sorted(p.name for p in dest.iterdir()))
+          PY
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - name: Publicar en GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
