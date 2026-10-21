@@ -1,44 +1,52 @@
-# Databricks Certified Data Engineer Professional — Learning Campus
+# Databricks Data Engineer Professional — Academia interactiva (v2.0)
 
-Campus interactivo en español para preparar la certificación **Databricks Data Engineer Professional**, basado en la guía oficial del **9 de octubre de 2026**. No está afiliado a Databricks.
+Curso y campus de estudio en español, basado en la **guía oficial Databricks Certified Data Engineer Professional del 9 de octubre de 2026**. No oficial ni afiliado a Databricks.
 
 ## Abrir el campus
 
-**GitHub Pages (una vez habilitado):** https://thehavoc10.github.io/databricks-data-engineer-professional-simulator/
+https://thehavoc10.github.io/databricks-data-engineer-professional-simulator/
 
-## Contenido actual (fase 1)
+Si la dirección aún no responde, activa **Settings → Pages → Build and deployment → GitHub Actions** y revisa el flujo en **Actions**.
 
-- 9 bloques y 45 objetivos del temario oficial, con teoría, errores habituales y referencias.
-- 16 laboratorios guiados; snippets SQL, PySpark y YAML; comparaciones con Microsoft Fabric.
-- Itinerario orientativo de 10 semanas / 80 horas.
-- Glosario de 57 conceptos y seguimiento por objetivo.
-- Buscador, marcadores, notas, temporizador, estadísticas, tema oscuro/claro y diseño responsive.
-- Importación y exportación de los avances en JSON.
-- Apartado reservado para el **simulador Professional**, que se incorporará en la fase 2.
+## Qué incluye esta versión
 
-## Publicación en GitHub Pages
+- **45 lecciones** individuales que cubren los objetivos enumerados de las **9 áreas oficiales**.
+- Cada lección: fundamento, tres explicaciones técnicas, decisiones de producción, código, limitaciones, situación razonada con respuesta oculta, errores frecuentes, enlaces y notas.
+- **16 laboratorios ampliados** con requisitos, preparación, código de ejecución, comprobaciones, resultados esperados y advertencias.
+- Temario resumido anterior, buscador, tablas de referencia, glosario de 57 conceptos, comparaciones con Fabric y plan de 10 semanas.
+- Progreso por objetivo (pendiente, en estudio, dominado), marcadores, notas, cronómetro, tema claro/oscuro y diseño para móvil.
+- Importación/exportación de progreso JSON. Al actualizar, se mantiene la clave original de `localStorage`.
+- **Simulador Professional reservado** para la siguiente etapa (esta versión no incluye banco de preguntas).
 
-Los archivos de la web ya están descomprimidos en la raíz de `main`. **No necesitas subir un ZIP.**
+## Cómo estudiar
 
-1. Abre **Settings → Pages** de este repositorio.
-2. En **Build and deployment → Source** selecciona **GitHub Actions** (no «Deploy from a branch»).
-3. En **Actions**, comprueba el flujo **Publicar Databricks Professional Campus**.
-4. Si no se ha ejecutado, abre el flujo y pulsa **Run workflow** usando la rama `main`.
-5. Cuando el flujo `deploy` termine en verde, abre la URL indicada arriba.
+1. Abre **Academia completa** en el menú y selecciona la lección de la sección deseada.
+2. Lee los mecanismos, copia y adapta el código en Databricks; revisa qué funcionalidades exige el entorno.
+3. Resuelve el **caso razonado** antes de expandir su explicación.
+4. Completa el laboratorio enlazado, guarda observaciones y marca el objetivo como dominado solo cuando puedas justificarlo sin ayuda.
+5. Consulta **Estadísticas** para seguir el avance y haz una copia JSON cuando cambies de dispositivo.
 
-El flujo `.github/workflows/publish.yml` valida y despliega los archivos estáticos desde `main` automáticamente cuando cambian. No hace falta npm, compilación, servidor ni claves.
+Los ejemplos no se ejecutan desde GitHub Pages. Son didácticos: **algunos son scripts adaptables, otros son definiciones parciales o pseudocódigo expresamente señalado**. Conectores, system tables, métricas ABAC, triggers y Lakeflow pueden requerir permisos, nube/edición, runtimes o funcionalidades no disponibles en Free Edition.
 
 ## Estructura
 
 ```text
-index.html                         Estructura y carga de scripts
-styles.css                         Diseño y temas
-content.js                         Contenido académico y objetivos
-app.js                             Navegación y funcionalidad
-favicon.svg                        Icono
-.github/workflows/publish.yml      Publicación de GitHub Pages
-README.md                          Instrucciones
+index.html                    Entrada de la aplicación
+content.js                    Temario, objetivos, glosario y mapa de labs
+app.js                        Rutas, estado local y acciones
+styles.css                    Estilos generales
+favicon.svg                   Icono
+academy/01.js ... 09.js       45 lecciones en nueve archivos
+academy/academy-ui.js         Renderizado de lecciones y navegación
+academy/academy.css           Presentación responsive de Academia
+academy/labs-a.js             Laboratorios L01 a L08
+academy/labs-b.js             Laboratorios L09 a L16
+.github/workflows/publish.yml Deploy automático de Pages
 ```
+
+## GitHub Pages
+
+El flujo `.github/workflows/publish.yml` se ejecuta al hacer push a `main` en HTML/JS/CSS/Academia y también manualmente. Publica el directorio `_site` y valida el número de archivos de lecciones. En la configuración de Pages, utiliza **GitHub Actions** (no es necesario el ZIP). No necesita npm, Vite, backend ni API keys.
 
 ## Desarrollo local
 
@@ -46,16 +54,18 @@ README.md                          Instrucciones
 python -m http.server 8000
 ```
 
-Visita http://localhost:8000/.
+Abre http://localhost:8000/ desde la raíz del repositorio.
 
-## Privacidad y alcance
+## Privacidad y límites
 
-El avance se almacena en `localStorage` del navegador. No se sincroniza entre navegadores ni dispositivos: utiliza la función de exportación/importación JSON de la web para hacer copias.
+El progreso, las notas y los marcadores se guardan en `localStorage` de **ese navegador y origen**, sin sincronización. Exporta un JSON desde Estadísticas antes de borrar datos o cambiar de equipo. Los ejemplos deben validarse en tu entorno; el proyecto no garantiza comportamientos homogéneos entre todas las nubes, versiones de Runtime y modalidades de compute.
 
-Los ejemplos de código son pedagógicos; debes adaptar workspace, permisos, catálogo, versión y entorno. Esta web **no ejecuta SQL ni PySpark**. El simulador de preguntas se añadirá más adelante.
+## Referencias
 
-## Documentación
+- [Guía oficial del examen, octubre 2026](https://www.databricks.com/sites/default/files/2026-10/Databricks-Certified-Data-Engineer-Professional-Exam-Guide-9-Oct-2026.pdf)
+- [Databricks Docs](https://docs.databricks.com/)
+- [Databricks Data Engineer Professional](https://www.databricks.com/learn/certification/data-engineer-professional)
 
-- [Guía oficial, 9 de octubre de 2026](https://www.databricks.com/sites/default/files/2026-10/Databricks-Certified-Data-Engineer-Professional-Exam-Guide-9-Oct-2026.pdf)
-- [Certificación Databricks Professional](https://www.databricks.com/learn/certification/data-engineer-professional)
-- [Documentación oficial Databricks](https://docs.databricks.com/)
+## Próxima fase
+
+Integrar el banco de preguntas original de la Professional con referencias, explicaciones por distractor, modo estudio/examen, estadísticas por objetivo y la experiencia móvil de nuestro simulador Associate.
