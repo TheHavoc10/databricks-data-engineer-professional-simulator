@@ -9,6 +9,7 @@ on:
       - 'app.js'
       - 'content.js'
       - 'favicon.svg'
+      - 'academy/**'
       - '.github/workflows/publish.yml'
   workflow_dispatch:
 
@@ -40,12 +41,18 @@ jobs:
             test -s "$file" || { echo "::error::Falta el archivo $file"; exit 1; }
             cp "$file" _site/
           done
+          test -s academy/academy-ui.js || { echo 'No hay vistas de Academia'; exit 1; }
+          test -s academy/academy.css || { echo 'No hay estilos de Academia'; exit 1; }
+          for n in $(seq -w 1 9); do test -s "academy/$n.js" || { echo "Falta la lección de bloque $n"; exit 1; }; done
+          cp -R academy _site/academy
           touch _site/.nojekyll
           python - <<'PY'
           from pathlib import Path
           page=Path("_site/index.html").read_text(encoding="utf-8")
           assert '<html' in page.lower()
           assert 'content.js' in page and 'app.js' in page and 'styles.css' in page
+          assert 'academy/academy-ui.js' in page
+          assert len(list(Path('_site/academy').glob('[0-9][0-9].js'))) == 9
           print("Archivos del campus listos para publicación.")
           PY
 
