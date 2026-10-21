@@ -1,29 +1,44 @@
-# Databricks Data Engineer Professional — Learning Campus
+# Databricks Certified Data Engineer Professional — Learning Campus
 
-Web estática interactiva, en español, para preparar **Databricks Certified Data Engineer Professional** (guía del **9 de octubre de 2026**).
+Campus interactivo en español para preparar la certificación **Databricks Data Engineer Professional**, basado en la guía oficial del **9 de octubre de 2026**. No está afiliado a Databricks.
 
-**No es una web oficial ni está afiliada a Databricks**. No incluye material de exámenes filtrado ni pretende replicar preguntas reales. Antes de presentarte, revisa la [guía oficial](https://www.databricks.com/sites/default/files/2026-10/Databricks-Certified-Data-Engineer-Professional-Exam-Guide-9-Oct-2026.pdf); Databricks aconseja hacerlo dos semanas antes.
+## Abrir el campus
 
-## Contenido
+**GitHub Pages (una vez habilitado):** https://thehavoc10.github.io/databricks-data-engineer-professional-simulator/
 
-- **9 bloques** y **45 objetivos** enumerados en el temario oficial (los pesos suman 100 %).
-- Teoría técnica, errores habituales, reglas de decisión, ejemplos SQL/PySpark/YAML y enlaces a documentación oficial.
-- **16 laboratorios** con checklist, validación y límites de infraestructura explicados.
-- **10 semanas / 80 horas** de itinerario orientativo, priorizando ingesta, CDC, streaming y optimización.
-- **57 conceptos** de glosario con definiciones ocultables.
-- Comparativa Databricks/Fabric, notas por bloque y objetivo, guardado en localStorage, exportación e importación JSON.
-- Analíticas, cronómetro de estudio y marcadores personales.
-- Sección **simulador** reservada para la fase 2 (no hay preguntas de examen en esta versión).
+## Contenido actual (fase 1)
 
-## Cómo publicarlo en GitHub Pages
+- 9 bloques y 45 objetivos del temario oficial, con teoría, errores habituales y referencias.
+- 16 laboratorios guiados; snippets SQL, PySpark y YAML; comparaciones con Microsoft Fabric.
+- Itinerario orientativo de 10 semanas / 80 horas.
+- Glosario de 57 conceptos y seguimiento por objetivo.
+- Buscador, marcadores, notas, temporizador, estadísticas, tema oscuro/claro y diseño responsive.
+- Importación y exportación de los avances en JSON.
+- Apartado reservado para el **simulador Professional**, que se incorporará en la fase 2.
 
-1. Crea un repositorio **público** en GitHub. Nombre sugerido: `databricks-data-engineer-professional`.
-2. Sube a la **raíz de la rama `main`** los archivos `index.html`, `styles.css`, `app.js`, `content.js`, `favicon.svg`, `.nojekyll` y `README.md`. `build_content.py` es opcional: solo se utilizó para generar `content.js`.
-3. En el repositorio ve a **Settings → Pages → Build and deployment**.
-4. En **Source** elige **Deploy from a branch**. Selecciona **main** y **/(root)**; guarda.
-5. GitHub publicará el sitio en una dirección con este patrón: `https://TU-USUARIO.github.io/databricks-data-engineer-professional/`. Espera a que Pages muestre su URL publicada.
+## Publicación en GitHub Pages
 
-No requiere npm, frameworks, compilación, servidor ni clave de API. Basta con archivos estáticos. También puedes abrir `index.html` en local.
+Los archivos de la web ya están descomprimidos en la raíz de `main`. **No necesitas subir un ZIP.**
+
+1. Abre **Settings → Pages** de este repositorio.
+2. En **Build and deployment → Source** selecciona **GitHub Actions** (no «Deploy from a branch»).
+3. En **Actions**, comprueba el flujo **Publicar Databricks Professional Campus**.
+4. Si no se ha ejecutado, abre el flujo y pulsa **Run workflow** usando la rama `main`.
+5. Cuando el flujo `deploy` termine en verde, abre la URL indicada arriba.
+
+El flujo `.github/workflows/publish.yml` valida y despliega los archivos estáticos desde `main` automáticamente cuando cambian. No hace falta npm, compilación, servidor ni claves.
+
+## Estructura
+
+```text
+index.html                         Estructura y carga de scripts
+styles.css                         Diseño y temas
+content.js                         Contenido académico y objetivos
+app.js                             Navegación y funcionalidad
+favicon.svg                        Icono
+.github/workflows/publish.yml      Publicación de GitHub Pages
+README.md                          Instrucciones
+```
 
 ## Desarrollo local
 
@@ -31,38 +46,16 @@ No requiere npm, frameworks, compilación, servidor ni clave de API. Basta con a
 python -m http.server 8000
 ```
 
-Abre `http://localhost:8000/`. Los datos de progreso se guardan solo en el navegador y en el origen actual (la copia local y GitHub Pages tienen almacenamientos separados).
+Visita http://localhost:8000/.
 
-## Archivos
+## Privacidad y alcance
 
-```text
-index.html     Estructura semántica y navegación
-styles.css     Diseño responsive, temas claro/oscuro
-content.js     Contenido académico, objetivos, labs y referencias
-app.js         Vistas, estado y funcionalidades interactivas
-favicon.svg    Icono propio
-.nojekyll      Desactiva el procesamiento Jekyll innecesario
-README.md      Instalación y arquitectura
-build_content.py  Fuente editorial opcional para regenerar content.js
-```
+El avance se almacena en `localStorage` del navegador. No se sincroniza entre navegadores ni dispositivos: utiliza la función de exportación/importación JSON de la web para hacer copias.
 
-## Privacidad y limitaciones
+Los ejemplos de código son pedagógicos; debes adaptar workspace, permisos, catálogo, versión y entorno. Esta web **no ejecuta SQL ni PySpark**. El simulador de preguntas se añadirá más adelante.
 
-Las notas, las marcas y el seguimiento se almacenan con **localStorage**. No se suben a GitHub ni se sincronizan entre dispositivos. Usa **Estadísticas → Exportar JSON** para hacer una copia y **Importar JSON** para recuperar el progreso. Si borras datos del navegador sin exportarlos, no se pueden recuperar desde el sitio.
+## Documentación
 
-Los fragmentos de código son guías pedagógicas que pueden requerir adaptar catálogos, permisos, rutas y versiones. Algunas funciones están limitadas por workspace, nube, runtime, edición o permisos. La web **no ejecuta SQL ni PySpark**: las pruebas se realizan en tu entorno Databricks.
-
-## Integración futura del simulador
-
-La futura aplicación de preguntas se añadirá como nueva vista o en un directorio `quiz/`, reutilizando la interfaz del simulador Associate. El contenido futuro deberá contar con referencias a documentación oficial, controles de calidad y estadísticas por objetivo; no hay puntuaciones ficticias en la versión actual.
-
-## Referencias oficiales
-
-- [Guía de examen Databricks DE Professional, octubre 2026](https://www.databricks.com/sites/default/files/2026-10/Databricks-Certified-Data-Engineer-Professional-Exam-Guide-9-Oct-2026.pdf)
-- [Página de certificación Professional](https://www.databricks.com/learn/certification/data-engineer-professional)
-- [Documentación de Databricks](https://docs.databricks.com/)
-- [GitHub Pages: fuente de publicación](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)
-
-## Licencia y atribución
-
-Contenido didáctico redactado para esta aplicación. Las referencias a productos y marcas pertenecen a sus respectivos titulares. No se reproducen ni incorporan bancos de examen de terceros.
+- [Guía oficial, 9 de octubre de 2026](https://www.databricks.com/sites/default/files/2026-10/Databricks-Certified-Data-Engineer-Professional-Exam-Guide-9-Oct-2026.pdf)
+- [Certificación Databricks Professional](https://www.databricks.com/learn/certification/data-engineer-professional)
+- [Documentación oficial Databricks](https://docs.databricks.com/)
