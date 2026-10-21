@@ -2050,9 +2050,9 @@ window.DE_PRO_DATA = {
     "security": 83
   },
   "meta": {
-    "version": "1.0.0",
+    "version": "2.0.0",
     "date": "2026-10-21",
     "objectives": 45,
-    "description": "Campus profesional interactivo para certificación Databricks Data Engineer Professional: teoría, laboratorios, seguimiento y notas."
+    "description": "Academia Professional: 45 lecciones técnicas, 16 guías prácticas, teoría, seguimiento y notas."
   }
 };
