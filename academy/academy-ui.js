@@ -15,6 +15,16 @@ function indexView(c) {
       return '<section class="academy-domain">'+c.sectionBar(s.id+' · '+c.esc(s.name),c.badge(s.weight+'% del examen','accent'))+moduleView(s,c)+'</section>';
     }).join('');
 }
+
+function renderMasterclass(id,c){
+  var m=window.DE_MASTERCLASS && window.DE_MASTERCLASS[id];
+  if(!m)return '';
+  return '<section class="academy-masterclass panel"><div class="academy-kicker">MASTERCLASS / PROFUNDIZACIÓN</div><h2>'+c.esc(m.title)+'</h2>'+
+    '<div class="academy-timeline">'+m.sequence.map(function(step,i){return '<div class="academy-timeline-step"><span>'+String(i+1).padStart(2,'0')+'</span><p>'+c.esc(step)+'</p></div>'}).join('')+'</div>'+
+    m.sections.map(function(part,i){return '<div class="academy-deep-part"><h3>'+String(i+1).padStart(2,'0')+' · '+c.esc(part.h)+'</h3>'+
+       part.p.map(function(p){return '<p>'+c.esc(p)+'</p>'}).join('')+'</div>'}).join('')+'</section>';
+}
+
 function lessonView(id,c) {
   var l=c.lessons[id],o=c.allObjectives.find(function(x){return x.id===id});
   if(!o || !l)return c.notFound();
@@ -33,6 +43,7 @@ function lessonView(id,c) {
       '<div class="academy-fabric"><strong>Databricks y Fabric</strong><p>'+c.esc(sec.fabric)+'</p></div></section>'+
     '<section class="panel academy-article"><span class="academy-kicker">02 / PROFUNDIDAD TÉCNICA</span><h2>Mecanismos y límites</h2>'+
       l.mechanics.map(function(x,i){return '<div class="academy-paragraph"><span>'+String(i+1).padStart(2,'0')+'</span><p>'+c.esc(x)+'</p></div>'}).join('')+'</section>'+
+    renderMasterclass(id,c)+
     '<section class="panel academy-article"><span class="academy-kicker">03 / PRODUCCIÓN</span><h2>Criterios de decisión</h2>'+
       l.steps.map(function(x,i){return '<div class="academy-check"><span>✓</span><p>'+c.esc(x)+'</p></div>'}).join('')+'</section>'+
     '<section class="academy-article"><span class="academy-kicker">04 / EJEMPLO</span><h2>Implementación y código</h2>'+
