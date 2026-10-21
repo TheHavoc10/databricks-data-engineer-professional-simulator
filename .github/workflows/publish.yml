@@ -43,7 +43,7 @@ jobs:
           done
           test -s academy/academy-ui.js || { echo 'No hay vistas de Academia'; exit 1; }
           test -s academy/academy.css || { echo 'No hay estilos de Academia'; exit 1; }
-          for n in $(seq -w 1 9); do test -s "academy/$n.js" || { echo "Falta la lección de bloque $n"; exit 1; }; done
+          for n in 01 02 03 04 05 06 07 08 09; do test -s "academy/$n.js" || { echo "Falta la lección de bloque $n"; exit 1; }; done
           cp -R academy _site/academy
           touch _site/.nojekyll
           python - <<'PY'
