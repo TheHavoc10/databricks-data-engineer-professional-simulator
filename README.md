@@ -12,6 +12,7 @@ Si la dirección aún no responde, activa **Settings → Pages → Build and dep
 
 - **45 lecciones** individuales que cubren los objetivos enumerados de las **9 áreas oficiales**.
 - Cada lección: fundamento, tres explicaciones técnicas, decisiones de producción, código, limitaciones, situación razonada con respuesta oculta, errores frecuentes, enlaces y notas.
+- **8 masterclasses** de profundización (Auto Loader, AUTO CDC/SCD2, streaming, CDF, joins y ventanas, Spark UI, ABAC y bundles), con secuencias y diagnósticos.
 - **16 laboratorios ampliados** con requisitos, preparación, código de ejecución, comprobaciones, resultados esperados y advertencias.
 - Temario resumido anterior, buscador, tablas de referencia, glosario de 57 conceptos, comparaciones con Fabric y plan de 10 semanas.
 - Progreso por objetivo (pendiente, en estudio, dominado), marcadores, notas, cronómetro, tema claro/oscuro y diseño para móvil.
@@ -38,6 +39,7 @@ styles.css                    Estilos generales
 favicon.svg                   Icono
 academy/01.js ... 09.js       45 lecciones en nueve archivos
 academy/academy-ui.js         Renderizado de lecciones y navegación
+academy/masterclass.js           Profundizaciones de ocho temas prioritarios
 academy/academy.css           Presentación responsive de Academia
 academy/labs-a.js             Laboratorios L01 a L08
 academy/labs-b.js             Laboratorios L09 a L16
