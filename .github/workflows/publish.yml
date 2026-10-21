@@ -1,51 +1,62 @@
-name: Publicar campus desde ZIP
+name: Publicar Databricks Professional Campus
+
 on:
   push:
     branches: [main]
     paths:
-      - 'databricks-data-engineer-professional-campus.zip'
+      - 'index.html'
+      - 'styles.css'
+      - 'app.js'
+      - 'content.js'
+      - 'favicon.svg'
       - '.github/workflows/publish.yml'
   workflow_dispatch:
+
 permissions:
   contents: read
   pages: write
   id-token: write
+
 concurrency:
   group: github-pages
   cancel-in-progress: false
+
 jobs:
   deploy:
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Extraer y validar el campus
+      - name: Descargar código
+        uses: actions/checkout@v4
+
+      - name: Preparar y validar web estática
+        shell: bash
         run: |
+          set -euo pipefail
+          mkdir -p _site
+          for file in index.html styles.css app.js content.js favicon.svg; do
+            test -s "$file" || { echo "::error::Falta el archivo $file"; exit 1; }
+            cp "$file" _site/
+          done
+          touch _site/.nojekyll
           python - <<'PY'
           from pathlib import Path
-          from zipfile import ZipFile
-          source = Path("databricks-data-engineer-professional-campus.zip")
-          dest = Path("_site")
-          dest.mkdir(exist_ok=True)
-          if not source.exists():
-              raise SystemExit("Falta el archivo ZIP del campus en la raíz del repositorio.")
-          with ZipFile(source) as z:
-              for item in z.infolist():
-                  p = Path(item.filename)
-                  if p.is_absolute() or ".." in p.parts:
-                      raise SystemExit(f"Ruta no permitida en ZIP: {p}")
-              z.extractall(dest)
-          if not (dest / "index.html").exists():
-              raise SystemExit("El ZIP debe contener index.html en la raíz.")
-          (dest / ".nojekyll").touch()
-          print("Campus preparado:", sorted(p.name for p in dest.iterdir()))
+          page=Path("_site/index.html").read_text(encoding="utf-8")
+          assert '<html' in page.lower()
+          assert 'content.js' in page and 'app.js' in page and 'styles.css' in page
+          print("Archivos del campus listos para publicación.")
           PY
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Subir artefacto Pages
+        uses: actions/upload-pages-artifact@v3
         with:
           path: _site
-      - name: Publicar en GitHub Pages
+
+      - name: Publicar web
         id: deployment
         uses: actions/deploy-pages@v4
