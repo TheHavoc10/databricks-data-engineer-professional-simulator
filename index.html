@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0e121b">
+  <meta name="description" content="Campus interactivo de preparación Databricks Data Engineer Professional · Guía oficial octubre 2026, 45 objetivos, teoría avanzada y laboratorios.">
+  <title>DE Professional · Learning Hub</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="content.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Saltar al contenido</a>
+  <div id="mobile-backdrop" aria-hidden="true"></div>
+  <div class="app-shell">
+    <aside id="sidebar" class="sidebar" aria-label="Navegación principal">
+      <a href="#/dashboard" class="brand" aria-label="Ir al inicio">
+        <span class="brand-symbol"><span class="brand-glyph">D</span><span class="brand-glyph brand-glyph-b">P</span></span>
+        <span class="brand-words"><strong>DE PROFESSIONAL</strong><small>LEARNING CAMPUS <span class="signal-dot"></span></small></span>
+      </a>
+      <div class="side-scroll">
+        <div class="nav-label">APRENDIZAJE</div>
+        <nav class="main-nav" id="main-nav">
+          <a class="nav-link" href="#/dashboard" data-nav="dashboard"><span class="nav-icon">▦</span><span>Mi campus</span></a>
+          <a class="nav-link" href="#/modules" data-nav="modules"><span class="nav-icon">▤</span><span>Temario oficial</span><small id="side-objectives">45</small></a>
+          <a class="nav-link" href="#/roadmap" data-nav="roadmap"><span class="nav-icon">◷</span><span>Ruta de estudio</span></a>
+          <a class="nav-link" href="#/labs" data-nav="labs"><span class="nav-icon">⌘</span><span>Laboratorios</span><small>16</small></a>
+          <a class="nav-link" href="#/compare" data-nav="compare"><span class="nav-icon">⇄</span><span>Databricks vs Fabric</span></a>
+        </nav>
+        <div class="nav-label">HERRAMIENTAS</div>
+        <nav class="main-nav">
+          <a class="nav-link" href="#/glossary" data-nav="glossary"><span class="nav-icon">A</span><span>Glosario</span></a>
+          <a class="nav-link" href="#/notes" data-nav="notes"><span class="nav-icon">✎</span><span>Mis apuntes</span></a>
+          <a class="nav-link" href="#/analytics" data-nav="analytics"><span class="nav-icon">◫</span><span>Estadísticas</span></a>
+          <a class="nav-link" href="#/resources" data-nav="resources"><span class="nav-icon">↗</span><span>Documentación</span></a>
+        </nav>
+        <div class="nav-label">PRÓXIMAMENTE</div>
+        <nav class="main-nav"><a class="nav-link" href="#/simulator" data-nav="simulator"><span class="nav-icon">◇</span><span>Simulador Professional</span><span class="nav-soon">FASE 2</span></a></nav>
+      </div>
+      <div class="sidebar-footer">
+        <div class="side-progress-label"><span>PROGRESO DEL TEMARIO</span><strong id="side-percent">0%</strong></div>
+        <div class="progress-track"><div class="progress-fill" id="side-progress" style="width:0%"></div></div>
+        <p id="side-subtitle">0 de 45 objetivos dominados</p>
+        <div class="sidebar-footer-tools"><button type="button" id="export-shortcut" title="Exportar tu progreso">↧ Exportar</button><span class="build-version">v1.0</span></div>
+      </div>
+    </aside>
+    <div class="content-area">
+      <header class="topbar">
+        <div class="topbar-start"><button class="icon-button menu-toggle" id="menu-toggle" aria-label="Abrir menú" aria-expanded="false">☰</button><div id="breadcrumb" class="breadcrumb">Learning Campus <span>/</span> Mi campus</div></div>
+        <div class="topbar-end"><button id="top-search" class="search-trigger" type="button" aria-label="Buscar contenido"><span>⌕</span><span>Buscar cualquier concepto</span><kbd>/</kbd></button><span class="topbar-divider"></span><button id="theme-toggle" type="button" class="icon-button" title="Cambiar tema" aria-label="Cambiar tema">◐</button><span class="top-avatar" title="Estudio personal">DE</span></div>
+      </header>
+      <main id="main" tabindex="-1"><div id="app" class="page-loading"><div class="loading-spinner"></div><p>Preparando tu campus…</p></div></main>
+      <footer class="footer"><span>DE Professional Learning Campus · Proyecto independiente</span><span>Basado en la guía oficial · 09/10/2026 <span class="footer-separator">·</span> <a href="https://www.databricks.com/learn/certification/data-engineer-professional" target="_blank" rel="noopener noreferrer">Databricks Certification ↗</a></span></footer>
+    </div>
+  </div>
+  <div id="toast-stack" aria-live="polite" aria-atomic="false"></div>
+  <dialog id="search-dialog" class="search-dialog" aria-label="Búsqueda global"><div class="search-dialog-header"><span>⌕</span><input id="global-search" autocomplete="off" spellcheck="false" placeholder="Busca técnicas, objetivos, laboratorios, documentación…" aria-label="Buscar en la web"><button id="close-search" type="button" class="icon-button" aria-label="Cerrar búsqueda">✕</button></div><div id="search-results" class="search-results"></div><p class="search-hint">Pulsa / para buscar · ESC para cerrar · Selecciona un resultado para abrirlo</p></dialog>
+  <input id="import-input" type="file" accept="application/json,.json" class="visually-hidden">
+</body>
+</html>
