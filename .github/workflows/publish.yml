@@ -10,6 +10,7 @@ on:
       - 'content.js'
       - 'favicon.svg'
       - 'academy/**'
+      - 'quiz/**'
       - '.github/workflows/publish.yml'
   workflow_dispatch:
 
@@ -46,6 +47,9 @@ jobs:
           for asset in academy/masterclass.js academy/labs-a.js academy/labs-b.js; do test -s "$asset" || { echo "Falta $asset"; exit 1; }; done
           for n in 01 02 03 04 05 06 07 08 09; do test -s "academy/$n.js" || { echo "Falta la lección de bloque $n"; exit 1; }; done
           cp -R academy _site/academy
+          test -s quiz/questions.js || { echo 'Falta questions.js'; exit 1; }
+          for bank in practica-2025.json simulacro-1-2025.json simulacro-2-2025.json; do test -s "quiz/candidatos/$bank" || { echo "Falta banco $bank"; exit 1; }; done
+          cp -R quiz _site/quiz
           touch _site/.nojekyll
           python - <<'PY'
           from pathlib import Path
@@ -54,6 +58,7 @@ jobs:
           assert 'content.js' in page and 'app.js' in page and 'styles.css' in page
           assert 'academy/academy-ui.js' in page
           assert 'academy/masterclass.js' in page
+          assert 'quiz/questions.js' in page and 'quiz/questions.css' in page
           assert 'academy/labs-a.js' in page and 'academy/labs-b.js' in page
           assert len(list(Path('_site/academy').glob('[0-9][0-9].js'))) == 9
           print("Archivos del campus listos para publicación.")
