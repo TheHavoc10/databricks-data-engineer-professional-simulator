@@ -19,6 +19,14 @@ Si la dirección aún no responde, activa **Settings → Pages → Build and dep
 - Importación/exportación de progreso JSON. Al actualizar, se mantiene la clave original de `localStorage`.
 - **Simulador Professional reservado** para la siguiente etapa (esta versión no incluye banco de preguntas).
 
+## Banco Professional de preguntas — biblioteca beta
+
+He incorporado al repositorio el [inventario detallado de 196 preguntas candidatas](quiz/INVENTARIO.md) y el [plan de depuración](quiz/PLAN-REVISION.md). Las preguntas se importan con sus escenarios, opciones, respuestas propuestas y explicaciones desde [kengio](https://github.com/kengio/databricks-certification-study-guide) (MIT; atribución y licencia conservadas en [quiz/LICENCIA-FUENTE-MIT.txt](quiz/LICENCIA-FUENTE-MIT.txt)).
+
+La web muestra la sección **Simulador Professional · Beta** para explorar y responder estas preguntas; puedes filtrar por banco, bloque y dificultad, consultar el mosaico, usar doble clic para comprobar y expandir la explicación. El avance de preguntas se guarda en un almacenamiento separado del progreso de lecciones.
+
+**Aviso obligatorio:** proceden del temario 2025, no han sido auditadas una a una para 2026 y se han detectado respuestas incorrectas. Cuatro preguntas están bloqueadas. Las demás ofrecen práctica *provisional*, no una certificación, un benchmark validado ni una predicción de tu resultado. Antes de entrenar con fiabilidad será necesario contrastar las 196 y añadir preguntas originales para temas nuevos como ABAC, Iceberg, VARIANT, ai_query y Lakeflow Connect.
+
 ## Cómo estudiar
 
 1. Abre **Academia completa** en el menú y selecciona la lección de la sección deseada.
