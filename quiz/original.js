@@ -122,12 +122,12 @@ function onClick(event){
  else if(op==="finish")finish();
  else if(op==="exit"){if(confirm("¿Salir del intento actual? Podrás continuarlo más tarde o empezar otro.")){location.hash="#/academy"}}
  else if(op==="reset"){state.session=null;save();render()}
- else if(op==="review"){const n=Number(b.dataset.pos);s.index=n;state.session.finished=false;state.session.review=true;save();renderReview();}
+ else if(op==="review"){const n=Number(b.dataset.pos);s.index=n;state.session.review=true;save();renderReview();}
 }
 function renderReview(){
  const s=state.session;if(!s)return;root.querySelector("#oq-view").innerHTML='<div class="oq-review-banner"><button class="button ghost small" data-oq="back-results">← Volver a resultados</button><b>Revisión del simulacro</b></div><div class="oq-layout"><div class="oq-main">'+questionReview()+navigationReview()+'</div>'+grid()+'</div>';
 }
-function questionReview(){const s=state.session;s.finished=true;const content=question();s.finished=false;return content}
+function questionReview(){return question()}
 function navigationReview(){const s=state.session;return '<div class="oq-nav"><button class="button ghost" data-oq="review-prev" '+(s.index===0?"disabled":"")+'>← Anterior</button><button class="button primary" data-oq="back-results">Ver resultados →</button><button class="button ghost" data-oq="review-next" '+(s.index===s.ids.length-1?"disabled":"")+'>Siguiente →</button></div>'}
 function onClickReview(event){
  const b=event.target.closest("[data-oq]");if(!b||!state.session?.review)return false;
