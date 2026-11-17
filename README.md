@@ -17,15 +17,41 @@ Si la dirección aún no responde, activa **Settings → Pages → Build and dep
 - Temario resumido anterior, buscador, tablas de referencia, glosario de 57 conceptos, comparaciones con Fabric y plan de 10 semanas.
 - Progreso por objetivo (pendiente, en estudio, dominado), marcadores, notas, cronómetro, tema claro/oscuro y diseño para móvil.
 - Importación/exportación de progreso JSON. Al actualizar, se mantiene la clave original de `localStorage`.
-- **Simulador Professional reservado** para la siguiente etapa (esta versión no incluye banco de preguntas).
+- **Simulador Professional original 2026:** 60 preguntas nuevas basadas en documentación oficial, 45 objetivos, 26 escenarios con código, explicaciones y distractores individualizados.
 
-## Banco Professional de preguntas — biblioteca beta
+## Simulador Professional — banco original de 60 preguntas
 
-He incorporado al repositorio el [inventario detallado de 196 preguntas candidatas](quiz/INVENTARIO.md) y el [plan de depuración](quiz/PLAN-REVISION.md). Las preguntas se importan con sus escenarios, opciones, respuestas propuestas y explicaciones desde [kengio](https://github.com/kengio/databricks-certification-study-guide) (MIT; atribución y licencia conservadas en [quiz/LICENCIA-FUENTE-MIT.txt](quiz/LICENCIA-FUENTE-MIT.txt)).
+- [Abrir el simulador](https://thehavoc10.github.io/databricks-data-engineer-professional-simulator/#/simulator)
+- **60 preguntas completamente nuevas**, redactadas para el temario de la guía Professional del 9 de octubre de 2026. No son preguntas oficiales del examen ni filtraciones.
+- **45 objetivos del temario cubiertos**, con 1-3 preguntas por objetivo, y distribución proporcional a los nueve bloques.
+- Cada pregunta dispone de cuatro opciones, respuesta correcta, explicación, justificación de los otros tres distractores, referencia a Databricks Docs y, cuando procede, código SQL/PySpark/YAML.
+- **Modo estudio:** corrección inmediata, doble clic sobre una opción, indicador de aciertos/errores y explicación ampliable.
+- **Modo examen:** 60 preguntas, 120 minutos, orden aleatorio, sin soluciones hasta terminar, revisión integral y resultados por área.
+- Mosaico navegable, marcadores de repaso, controles de progreso, historial de intentos, tema claro/oscuro y diseño responsive.
+- Atajos en simulador: A-D / 1-4 para elegir, Enter para comprobar en modo estudio, flechas para avanzar/retroceder y F para marcar.
+- **Sin nota de corte oficial inventada:** el porcentaje mostrado sirve para evaluar tu práctica. La página general de certificación puede no coincidir aún con la guía PDF del 9 de octubre.
+- Progreso guardado localmente en `de-pro-original-exam-v1`, separado del progreso teórico y los bancos históricos. Cambiar de dispositivo o limpiar el navegador elimina ese progreso salvo copia de los datos del navegador.
 
-La web muestra la sección **Simulador Professional · Beta** para explorar y responder estas preguntas; puedes filtrar por banco, bloque y dificultad, consultar el mosaico, usar doble clic para comprobar y expandir la explicación. El avance de preguntas se guarda en un almacenamiento separado del progreso de lecciones.
+**Distribución de preguntas:**
 
-**Aviso obligatorio:** proceden del temario 2025, no han sido auditadas una a una para 2026 y se han detectado respuestas incorrectas. Cuatro preguntas están bloqueadas. Las demás ofrecen práctica *provisional*, no una certificación, un benchmark validado ni una predicción de tu resultado. Antes de entrenar con fiabilidad será necesario contrastar las 196 y añadir preguntas originales para temas nuevos como ABAC, Iceberg, VARIANT, ai_query y Lakeflow Connect.
+| Bloque | Peso | Preguntas |
+|---|---:|---:|
+| 01 · Desarrollo Python y SQL | 23 % | 14 |
+| 02 · Ingesta y adquisición | 12 % | 7 |
+| 03 · Manipulación y calidad | 12 % | 7 |
+| 04 · Observabilidad y alertas | 10 % | 6 |
+| 05 · Optimización y costes | 15 % | 9 |
+| 06 · Seguridad y cumplimiento | 8 % | 5 |
+| 07 · Gobierno | 5 % | 3 |
+| 08 · Depuración y despliegue | 10 % | 6 |
+| 09 · Modelado analítico | 5 % | 3 |
+| **Total** | **100 %** | **60** |
+
+**Fuentes de autoría:** los 60 enunciados son originales, escritos a partir de conceptos y ejemplos de la documentación oficial. Las páginas concretas de Databricks Docs aparecen enlazadas en cada pregunta. Las opciones y explicaciones no se copian literalmente de bancos comerciales. Los ejemplos se han revisado a nivel editorial, no ejecutados uno por uno en un workspace con todos los servicios habilitados.
+
+## Bancos históricos — archivo independiente
+
+La ruta [Bancos históricos](https://thehavoc10.github.io/databricks-data-engineer-professional-simulator/#/archive) conserva los tres bancos comunitarios con licencia MIT: **73 prácticas + 63 simulacro 1 + 60 simulacro 2 = 196 candidatas**. Están detalladas en [INVENTARIO.md](quiz/INVENTARIO.md) y su [plan de revisión](quiz/PLAN-REVISION.md). Material basado en blueprint 2025, **no validado** como simulacro actual y con cuatro incidencias bloqueadas. Aviso copyright original en [LICENCIA-FUENTE-MIT.txt](quiz/LICENCIA-FUENTE-MIT.txt).
 
 ## Cómo estudiar
 
@@ -51,12 +77,17 @@ academy/masterclass.js           Profundizaciones de ocho temas prioritarios
 academy/academy.css           Presentación responsive de Academia
 academy/labs-a.js             Laboratorios L01 a L08
 academy/labs-b.js             Laboratorios L09 a L16
+quiz/original/01.json ... 09.json 60 preguntas originales por área
+quiz/original.js              Modos estudio/examen, corrección y cronómetro
+quiz/original.css             Diseño responsive del simulador
+quiz/candidatos/*.json        196 preguntas históricas atribuidas
+quiz/questions.js             Visor de preguntas históricas
 .github/workflows/publish.yml Deploy automático de Pages
 ```
 
 ## GitHub Pages
 
-El flujo `.github/workflows/publish.yml` se ejecuta al hacer push a `main` en HTML/JS/CSS/Academia y también manualmente. Publica el directorio `_site` y valida el número de archivos de lecciones. En la configuración de Pages, utiliza **GitHub Actions** (no es necesario el ZIP). No necesita npm, Vite, backend ni API keys.
+El flujo `.github/workflows/publish.yml` se ejecuta al hacer push a `main` en HTML/JS/CSS/Academia y también manualmente. Publica el directorio `_site` y valida lecciones, nueve archivos de preguntas originales y los tres bancos históricos. En la configuración de Pages, utiliza **GitHub Actions** (no es necesario el ZIP). No necesita npm, Vite, backend ni API keys.
 
 ## Desarrollo local
 
@@ -76,6 +107,8 @@ El progreso, las notas y los marcadores se guardan en `localStorage` de **ese na
 - [Databricks Docs](https://docs.databricks.com/)
 - [Databricks Data Engineer Professional](https://www.databricks.com/learn/certification/data-engineer-professional)
 
-## Próxima fase
+## Próximas mejoras
 
-Integrar el banco de preguntas original de la Professional con referencias, explicaciones por distractor, modo estudio/examen, estadísticas por objetivo y la experiencia móvil de nuestro simulador Associate.
+- Revisión técnica continua a medida que cambian las funcionalidades de Databricks y la guía del examen.
+- Más preguntas originales, especialmente código de Lakeflow, Lakeflow Connect, Iceberg, ABAC y troubleshooting.
+- Estadísticas por objetivo y exportación/importación específica del historial del simulador.
