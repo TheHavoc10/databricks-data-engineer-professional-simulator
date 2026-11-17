@@ -10,23 +10,25 @@
       "title": "Contrato JSON cambiante",
       "stem": "Un proveedor envía un campo extra ocasional en JSON. Debes conservar la carga raw, identificar valores problemáticos y no perder evidencia para reprocesar Silver. ¿Qué diseño se ajusta mejor?",
       "options": [
+        "Convertir toda la entrada a una tabla Gold con esquema fijo y sin raw.",
         "Leer solo las columnas conocidas y descartar el resto silenciosamente.",
         "Conservar Bronze con payload/metadatos, rescued data o VARIANT según el caso, y validar un Silver tipado.",
-        "Ejecutar DISTINCT en cada fichero y asumir que corrige errores de tipos.",
-        "Convertir toda la entrada a una tabla Gold con esquema fijo y sin raw."
+        "Ejecutar DISTINCT en cada fichero y asumir que corrige errores de tipos."
       ],
-      "answer": "B",
+      "answer": "C",
       "explanation": "Bronze debe conservar fidelidad y trazabilidad; rescued data y VARIANT ayudan a retener contenido no previsto hasta definir contratos en Silver.",
       "whyWrong": [
+        "Saltarse raw impide analizar cambios y reconstruir datos.",
         "Se pierde información no prevista.",
-        "DISTINCT no repara incompatibilidades de esquema ni trazabilidad.",
-        "Saltarse raw impide analizar cambios y reconstruir datos."
+        "",
+        "DISTINCT no repara incompatibilidades de esquema ni trazabilidad."
       ],
       "source": "https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/",
       "code": "",
       "difficulty": "medium",
       "type": "scenario",
-      "origin": "original basada en documentación oficial"
+      "origin": "original basada en documentación oficial",
+      "reviewedFor": "2026-objective-mapping-and-option-alignment"
     },
     {
       "id": "OF-016",
@@ -35,23 +37,25 @@
       "title": "CDC en Delta e Iceberg",
       "stem": "Tu arquitectura combina tablas Delta e Iceberg v3 gestionadas, y los consumidores Databricks necesitan conocer filas modificadas. ¿Qué afirmación es más precisa según la documentación actual?",
       "options": [
-        "CDF solo puede existir en CSV y JSON, nunca en formatos de tabla.",
         "CDF automático puede exponer cambios en tablas Delta y Apache Iceberg v3 soportadas, con límites para lectores externos.",
         "Un archivo Iceberg externo puede leer siempre los cambios de CDF automático mediante cualquier cliente Iceberg.",
-        "CDF automático exige que se genere manualmente una tabla SCD2 por cada tabla fuente."
+        "CDF automático exige que se genere manualmente una tabla SCD2 por cada tabla fuente.",
+        "CDF solo puede existir en CSV y JSON, nunca en formatos de tabla."
       ],
-      "answer": "B",
+      "answer": "A",
       "explanation": "Databricks documenta CDF automático para Delta e Iceberg v3 soportados; las API de lectura existen, pero no todos los lectores externos pueden consumirlo.",
       "whyWrong": [
-        "CDF es una característica de formatos de tabla compatibles, no archivos raw.",
+        "",
         "CDF no forma parte de la especificación Iceberg para clientes externos arbitrarios.",
-        "CDF expone eventos de cambio; SCD2 es una estrategia distinta de modelado histórico."
+        "CDF expone eventos de cambio; SCD2 es una estrategia distinta de modelado histórico.",
+        "CDF es una característica de formatos de tabla compatibles, no archivos raw."
       ],
       "source": "https://docs.databricks.com/aws/en/tables/features/change-data-feed",
       "code": "",
       "difficulty": "medium",
       "type": "scenario",
-      "origin": "original basada en documentación oficial"
+      "origin": "original basada en documentación oficial",
+      "reviewedFor": "2026-objective-mapping-and-option-alignment"
     },
     {
       "id": "OF-017",
@@ -60,23 +64,25 @@
       "title": "Ingesta continua desde PostgreSQL",
       "stem": "Una base PostgreSQL empresarial debe cargarse inicialmente y después replicar INSERT/UPDATE/DELETE. El DBA puede habilitar replicación lógica y crear slots/publications. ¿Qué capacidad elegirías?",
       "options": [
-        "Lakehouse Federation, porque convierte consultas remotas en un feed CDC completo.",
-        "Lakeflow Connect PostgreSQL con configuración de snapshot inicial y replicación lógica.",
         "Auto Loader directamente sobre el socket TCP de PostgreSQL.",
-        "Un SQL Warehouse con un SELECT manual una vez al mes."
+        "Un SQL Warehouse con un SELECT manual una vez al mes.",
+        "Lakehouse Federation, porque convierte consultas remotas en un feed CDC completo.",
+        "Lakeflow Connect PostgreSQL con configuración de snapshot inicial y replicación lógica."
       ],
-      "answer": "B",
+      "answer": "D",
       "explanation": "El conector gestionado Lakeflow Connect captura un estado inicial y cambios desde los mecanismos soportados del origen; exige preparación y permisos en PostgreSQL.",
       "whyWrong": [
-        "Federation ejecuta consultas remotas, no equivale al CDC gestionado.",
         "Auto Loader ingiere archivos de almacenamiento compatible.",
-        "La carga mensual no conserva de forma fiable los cambios continuos."
+        "La carga mensual no conserva de forma fiable los cambios continuos.",
+        "Federation ejecuta consultas remotas, no equivale al CDC gestionado.",
+        ""
       ],
       "source": "https://docs.databricks.com/aws/en/ingestion/lakeflow-connect/postgresql",
       "code": "",
       "difficulty": "medium",
       "type": "scenario",
-      "origin": "original basada en documentación oficial"
+      "origin": "original basada en documentación oficial",
+      "reviewedFor": "2026-objective-mapping-and-option-alignment"
     },
     {
       "id": "OF-018",
@@ -85,23 +91,25 @@
       "title": "Colaboración privada entre empresas",
       "stem": "Dos aseguradoras quieren calcular solapamientos de colectivos sin dar acceso directo a las filas crudas de la otra. ¿Qué tecnología se ajusta mejor?",
       "options": [
-        "Crear un share convencional de tablas con todos los identificadores.",
         "Databricks Clean Rooms con colaboración y ejecución aislada según políticas de salida.",
         "Crear un catálogo foreign para que una empresa pueda leer todo el origen de la otra.",
-        "Exportar el CSV sin contraseña a un almacenamiento compartido."
+        "Exportar el CSV sin contraseña a un almacenamiento compartido.",
+        "Crear un share convencional de tablas con todos los identificadores."
       ],
-      "answer": "B",
+      "answer": "A",
       "explanation": "Clean Rooms facilita análisis colaborativo protegiendo acceso a los datos raw de las partes y limitando la salida según las reglas del entorno.",
       "whyWrong": [
-        "Compartir tablas directamente permite consultar los datos proporcionados.",
+        "",
         "La federación no crea automáticamente garantías de colaboración privada.",
-        "Una exportación cruda expone información sensible."
+        "Una exportación cruda expone información sensible.",
+        "Compartir tablas directamente permite consultar los datos proporcionados."
       ],
       "source": "https://docs.databricks.com/aws/en/clean-rooms",
       "code": "",
       "difficulty": "medium",
       "type": "scenario",
-      "origin": "original basada en documentación oficial"
+      "origin": "original basada en documentación oficial",
+      "reviewedFor": "2026-objective-mapping-and-option-alignment"
     },
     {
       "id": "OF-019",
@@ -110,23 +118,25 @@
       "title": "Consulta puntual sin mover datos",
       "stem": "Un equipo necesita consultar ocasionalmente 50.000 registros de PostgreSQL desde Databricks, con governance UC y sin mantener réplica. ¿Qué solución tiene mejor encaje inicial?",
       "options": [
-        "Lakehouse Federation con conexión y catálogo foráneo, validando pushdown y permisos.",
-        "Auto Loader JSON aunque el origen no exporte archivos.",
         "Copiar toda la base cada minuto sin medir impacto.",
-        "Crear un pipeline AUTO CDC sin origen de cambios."
+        "Crear un pipeline AUTO CDC sin origen de cambios.",
+        "Lakehouse Federation con conexión y catálogo foráneo, validando pushdown y permisos.",
+        "Auto Loader JSON aunque el origen no exporte archivos."
       ],
-      "answer": "A",
+      "answer": "C",
       "explanation": "Federation permite consultar tablas de fuentes externas, con gobierno en UC y pushdown según conector/consulta, sin requerir una copia permanente.",
       "whyWrong": [
-        "No existe landing de archivos para Auto Loader.",
         "Replicar todos los datos añade operación y coste innecesarios al patrón descrito.",
-        "AUTO CDC requiere una fuente de eventos de cambios adecuada."
+        "AUTO CDC requiere una fuente de eventos de cambios adecuada.",
+        "",
+        "No existe landing de archivos para Auto Loader."
       ],
       "source": "https://docs.databricks.com/aws/en/query-federation/",
       "code": "",
       "difficulty": "medium",
       "type": "scenario",
-      "origin": "original basada en documentación oficial"
+      "origin": "original basada en documentación oficial",
+      "reviewedFor": "2026-objective-mapping-and-option-alignment"
     },
     {
       "id": "OF-020",
@@ -135,23 +145,25 @@
       "title": "Ingesta de ficheros binarios",
       "stem": "Un equipo recibe imágenes y PDFs; quiere conservar bytes y metadatos antes de aplicar extracción posterior. ¿Qué lectura es más apropiada como entrada raw?",
       "options": [
-        "spark.read.format('binaryFile') con rutas compatibles y columnas de contenido/metadatos.",
         "spark.read.format('csv') con separador de bytes vacío.",
         "spark.read.json() sobre cada PDF porque todos contienen JSON interno.",
-        "Un merge SCD2 directamente sobre los binarios."
+        "Un merge SCD2 directamente sobre los binarios.",
+        "spark.read.format('binaryFile') con rutas compatibles y columnas de contenido/metadatos."
       ],
-      "answer": "A",
+      "answer": "D",
       "explanation": "El origen binaryFile de Spark permite leer archivos como registros con contenido binario y metadatos, evitando parseo textual prematuro.",
       "whyWrong": [
         "CSV no representa arbitrariamente los bytes de documentos.",
         "Un PDF no es JSON por definición.",
-        "SCD2 modela cambios de entidades; no decodifica binarios."
+        "SCD2 modela cambios de entidades; no decodifica binarios.",
+        ""
       ],
       "source": "https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/",
       "code": "raw = spark.read.format(\"binaryFile\").load(\"/Volumes/dev/raw/docs/*\")\nraw.select(\"path\", \"length\").show()",
       "difficulty": "hard",
       "type": "code",
-      "origin": "original basada en documentación oficial"
+      "origin": "original basada en documentación oficial",
+      "reviewedFor": "2026-objective-mapping-and-option-alignment"
     },
     {
       "id": "OF-021",
@@ -160,23 +172,25 @@
       "title": "Volver al CDF tras una caída larga",
       "stem": "Un consumidor lee CDF de una tabla Delta desde la versión 15, pero durante una interrupción prolongada las versiones que necesita ya no están retenidas. ¿Qué procedimiento es seguro?",
       "options": [
-        "Suponer que CDF guarda todas las versiones para siempre.",
         "Crear un nuevo baseline o snapshot reconciliado y restablecer el cursor a partir de un punto disponible, evitando huecos.",
         "Poner startingVersion=-1 para recuperar cualquier evento desaparecido.",
-        "Eliminar la tabla destino antes de comprobar retención y consistencia."
+        "Eliminar la tabla destino antes de comprobar retención y consistencia.",
+        "Suponer que CDF guarda todas las versiones para siempre."
       ],
-      "answer": "B",
+      "answer": "A",
       "explanation": "CDF depende de versiones y ficheros retenidos. Si desaparece el intervalo necesario, el consumidor debe recuperar su estado desde un baseline coherente.",
       "whyWrong": [
-        "La retención limita acceso al historial.",
+        "",
         "Un número negativo no restaura versiones borradas.",
-        "Borrar el destino sin plan puede aumentar pérdida de datos."
+        "Borrar el destino sin plan puede aumentar pérdida de datos.",
+        "La retención limita acceso al historial."
       ],
       "source": "https://docs.databricks.com/aws/en/tables/features/change-data-feed",
       "code": "spark.readStream\n  .option(\"readChangeFeed\",\"true\")\n  .option(\"startingVersion\", 15)\n  .table(\"dev.silver.orders\")",
       "difficulty": "hard",
       "type": "code",
-      "origin": "original basada en documentación oficial"
+      "origin": "original basada en documentación oficial",
+      "reviewedFor": "2026-objective-mapping-and-option-alignment"
     }
   ]
 }
