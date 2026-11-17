@@ -50,7 +50,7 @@
         "DISTINCT no determina el evento analítico representado.",
         ""
       ],
-      "source": "https://docs.databricks.com/aws/en/ldp/concepts",
+      "source": "https://docs.databricks.com/aws/en/uc-semantics/metric-views/basic-modeling",
       "code": "",
       "difficulty": "medium",
       "type": "scenario",
@@ -77,7 +77,7 @@
         "Un CSV no es una capa semántica reutilizable.",
         "UDFs independientes mantienen discrepancias de definición."
       ],
-      "source": "https://docs.databricks.com/aws/en/sql/language-manual/sql-ref-syntax-ddl-create-view",
+      "source": "https://docs.databricks.com/aws/en/uc-semantics/metric-views/basic-modeling",
       "code": "",
       "difficulty": "medium",
       "type": "scenario",
