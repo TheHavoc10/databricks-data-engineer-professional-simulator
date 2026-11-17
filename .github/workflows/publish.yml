@@ -53,6 +53,7 @@ jobs:
           for n in 01 02 03 04 05 06 07 08 09; do test -s "quiz/original/$n.json" || { echo "Falta bloque original $n"; exit 1; }; done
           for bank in practica-2025.json simulacro-1-2025.json simulacro-2-2025.json; do test -s "quiz/candidatos/$bank" || { echo "Falta banco $bank"; exit 1; }; done
           cp -R quiz _site/quiz
+          python quiz/validate_questions.py
           touch _site/.nojekyll
           python - <<'PY'
           from pathlib import Path
