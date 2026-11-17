@@ -42,12 +42,12 @@ function question(){
  const selected=s.answers[q.id]||null;
  const opts=q.options.map((option,i)=>{
    const key="ABCD"[i],active=selected===key;
-   const correct=reviewed&&key===q.answer,wrong=reviewed&&active&&key!==q.answer;
-   return '<button class="oq-option '+(active?"picked ":"")+(correct?"right ":"")+(wrong?"wrong ":"")+'" data-oq="pick" data-letter="'+key+'" aria-pressed="'+String(active)+'" '+(reviewed?"disabled":"")+'><b class="oq-letter">'+key+'</b><span>'+fmt(option)+'</span>'+(correct?'<b class="oq-check-symbol">✓</b>':wrong?'<b class="oq-cross-symbol">×</b>':"")+'</button>';
+   const correct=reviewed&&key===q.answer,wrong=reviewed&&active&&key!==q.answer,excluded=reviewed&&key!==q.answer&&!active;
+   return '<button class="oq-option '+(active?"picked ":"")+(correct?"right ":"")+(wrong?"wrong ":"")+'" data-oq="pick" data-letter="'+key+'" aria-pressed="'+String(active)+'" '+(reviewed?"disabled":"")+'><b class="oq-letter">'+key+'</b><span>'+fmt(option)+'</span>'+(correct?'<b class="oq-check-symbol">✓</b>':wrong||excluded?'<b class="oq-cross-symbol">×</b>':"")+'</button>';
  }).join("");
  const checked=reviewed?'<div class="oq-answer-panel"><div class="oq-answer-title">'+(selected===q.answer?'<span class="oq-good">✓ Acertada</span>':'<span class="oq-bad">✕ '+(selected?"Incorrecta":"Sin responder")+'</span>')+' <small>Correcta: '+q.answer+'</small></div>'+
  '<p>'+fmt(q.explanation)+'</p><details '+(showSolution?"open":"")+'><summary>Por qué se descartan las otras opciones</summary>'+
- q.whyWrong.map((ex,i)=>'<p><b class="'+(q.answer==="ABCD"[i]?"oq-good":"oq-bad")+'">'+(q.answer==="ABCD"[i]?"✓":"×")+' '+("ABCD"[i])+'</b> '+(q.answer==="ABCD"[i]?fmt(q.explanation):fmt(ex))+'</p>').join("")+'</details>'+
+ q.whyWrong.map((ex,i)=>q.answer==="ABCD"[i]?"":'<p><b class="oq-bad">× '+("ABCD"[i])+'</b> '+fmt(ex)+'</p>').join("")+'</details>'+
  '<a href="'+esc(q.source)+'" target="_blank" rel="noopener noreferrer" class="oq-official-link">Consultar documentación oficial ↗</a></div>':"";
  return '<div class="oq-question-card"><div class="oq-qhead"><span class="oq-identity">'+esc(q.id)+'</span><span>OBJETIVO '+esc(q.objective)+'</span><span>'+esc(q.difficulty.toUpperCase())+'</span><span>Pregunta '+(s.index+1)+' / '+s.ids.length+'</span></div>'+
  '<h2>'+fmt(q.stem)+'</h2>'+(q.code?'<div class="oq-code"><div class="oq-code-header"><span>FRAGMENTO · SQL / PYSPARK / YAML</span><button class="oq-copy" data-oq="copy" type="button">Copiar</button></div><pre><code>'+esc(q.code)+'</code></pre></div>':"")+
@@ -84,7 +84,10 @@ function summary(){
  return '<div class="oq-results"><div class="oq-results-hero"><div class="eyebrow">RESULTADOS / '+(s.mode==="exam"?"SIMULACRO":"ESTUDIO")+'</div><h1>'+st.percent+'%</h1><h2>'+st.correct+' de '+st.total+' respuestas correctas</h2><p>Indicador de práctica original, no nota de corte oficial. Puedes revisar cada explicación y todas las opciones.</p>'+
  '<button class="button primary" data-oq="reset">Crear otro intento</button></div><div class="panel"><h3>Rendimiento por bloque</h3>'+
  Object.entries(areaMap).sort((a,b)=>a[0].localeCompare(b[0])).map(([id,x])=>'<div class="oq-domain-result"><div><strong>'+id+' · '+esc(x.name)+'</strong><span>'+x.correct+' / '+x.total+'</span></div><div class="oq-domain-bar"><i style="width:'+Math.round(100*x.correct/x.total)+'%"></i></div></div>').join("")+'</div>'+
- '<div class="panel"><div class="oq-review-head"><h3>Revisión completa de respuestas</h3><p>Abre cualquier pregunta; las soluciones se mostrarán con los distractores.</p></div><div class="oq-review-grid">'+s.ids.map((id,i)=>'<button class="oq-review-num '+(s.answers[id]===byId(id).answer?"correct":"incorrect")+'" data-oq="review" data-pos="'+i+'">'+(i+1)+'</button>').join("")+'</div></div></div>';
+ '<div class="panel oq-weak-topics"><h3>Objetivos que conviene repasar</h3><p class="muted">Las respuestas incorrectas o no contestadas tienen enlace directo a su lección de la Academia.</p>'+
+ s.ids.filter(id=>s.answers[id]!==byId(id).answer).slice(0,15).map(id=>{const q=byId(id);return '<a class="oq-weak-link" href="#/lesson/'+q.objective+'"><span>'+esc(q.objective)+'</span><b>'+esc(q.title)+'</b><span>Repasar →</span></a>'}).join("")+
+ (s.ids.every(id=>s.answers[id]===byId(id).answer)?'<p class="oq-good">No hay fallos en este intento.</p>':'')+
+ '</div>'+'<div class="panel"><div class="oq-review-head"><h3>Revisión completa de respuestas</h3><p>Abre cualquier pregunta; las soluciones se mostrarán con los distractores.</p></div><div class="oq-review-grid">'+s.ids.map((id,i)=>'<button class="oq-review-num '+(s.answers[id]===byId(id).answer?"correct":"incorrect")+'" data-oq="review" data-pos="'+i+'">'+(i+1)+'</button>').join("")+'</div></div></div>';
 }
 function render(){
  root=document.querySelector("#oq-root");if(!root)return;
