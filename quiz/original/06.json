@@ -1,0 +1,132 @@
+{
+  "domain": "06",
+  "name": "Seguridad y cumplimiento",
+  "weight": 8,
+  "questions": [
+    {
+      "id": "OF-044",
+      "domain": "06",
+      "objective": "06.01",
+      "title": "SELECT no es suficiente",
+      "stem": "A un grupo se le concede SELECT sobre analytics.gold.orders, pero sigue apareciendo PERMISSION_DENIED al consultarla. No hay máscaras ni restricciones adicionales. ¿Qué privilegios básicos faltan comprobar?",
+      "options": [
+        "USE CATALOG sobre analytics y USE SCHEMA sobre analytics.gold.",
+        "OWNERSHIP sobre el metastore completo.",
+        "CREATE CATALOG sobre analytics.",
+        "MODIFY sobre todas las tablas de analytics."
+      ],
+      "answer": "A",
+      "explanation": "Para acceder a objetos UC se requieren privilegios de navegación de catálogo y esquema, además del privilegio de operación correspondiente.",
+      "whyWrong": [
+        "No se necesita ser propietario del metastore para leer datos.",
+        "CREATE CATALOG es un privilegio de administración y no de lectura.",
+        "MODIFY permite escribir; no es requisito básico de SELECT."
+      ],
+      "source": "https://docs.databricks.com/aws/en/data-governance/unity-catalog/manage-privileges/",
+      "code": "GRANT USE CATALOG ON CATALOG analytics TO `readers`;\nGRANT USE SCHEMA ON SCHEMA analytics.gold TO `readers`;",
+      "difficulty": "hard",
+      "type": "code",
+      "origin": "original basada en documentación oficial"
+    },
+    {
+      "id": "OF-045",
+      "domain": "06",
+      "objective": "06.02",
+      "title": "Políticas ABAC por sensibilidad",
+      "stem": "Una empresa crea continuamente tablas con columnas identificadas con un governed tag sensible. Quiere aplicar máscaras de forma centralizada a todas las columnas etiquetadas dentro de un catálogo. ¿Qué opción encaja?",
+      "options": [
+        "ABAC con política de column mask ligada al ámbito y condiciones de governed tags.",
+        "Copiar manualmente la misma función a cada notebook del equipo.",
+        "Conceder SELECT a todas las personas y confiar en que no verán datos sensibles.",
+        "Una etiqueta libre sin política, porque el texto del tag ejecuta automáticamente una máscara."
+      ],
+      "answer": "A",
+      "explanation": "ABAC puede administrar máscaras/filtros basados en governed tags y ámbitos, sujeto a requisitos de compute y permisos.",
+      "whyWrong": [
+        "Las máscaras en notebooks no protegen otros accesos.",
+        "SELECT indiscriminado eleva exposición.",
+        "Etiquetar por sí mismo no impone una regla sin la política correspondiente."
+      ],
+      "source": "https://docs.databricks.com/aws/en/data-governance/unity-catalog/abac/core-concepts",
+      "code": "",
+      "difficulty": "medium",
+      "type": "scenario",
+      "origin": "original basada en documentación oficial"
+    },
+    {
+      "id": "OF-046",
+      "domain": "06",
+      "objective": "06.03",
+      "title": "Pseudonimización o anonimización",
+      "stem": "Se transforma email a SHA256 sin secreto, y se conserva el token para unir datasets. ¿Cómo debería clasificarse esta técnica?",
+      "options": [
+        "Anonimización irreversible garantizada para cualquier dataset.",
+        "Pseudonimización o hash identificable, con riesgo de reversión por diccionario o enlace entre registros.",
+        "Borrado físico de PII en todos los sistemas.",
+        "Encriptación con clave aleatoria que destruye toda correlación."
+      ],
+      "answer": "B",
+      "explanation": "Un hash determinista de identificadores con bajo espacio de búsqueda puede reidentificarse, y el enlace entre datos sigue siendo posible.",
+      "whyWrong": [
+        "No existe garantía automática de anonimización por usar SHA256.",
+        "La PII puede permanecer en otras fuentes o derivados.",
+        "Hash sin secreto no es cifrado reversible con clave gestionada."
+      ],
+      "source": "https://docs.databricks.com/aws/en/security/privacy/",
+      "code": "",
+      "difficulty": "medium",
+      "type": "scenario",
+      "origin": "original basada en documentación oficial"
+    },
+    {
+      "id": "OF-047",
+      "domain": "06",
+      "objective": "06.04",
+      "title": "Mask en Gold, fuga en logs",
+      "stem": "El dashboard de Gold aplica masking correcto, pero los errores del Job imprimen payloads raw con teléfonos en los logs. ¿Qué control falta?",
+      "options": [
+        "Proteger y minimizar datos personales también en logs, Bronze, checkpoints, identidad del Job y exports.",
+        "Añadir otra máscara únicamente al dashboard ya protegido.",
+        "Aumentar la retención de logs sin restringir acceso.",
+        "Deshabilitar las comprobaciones de calidad para que no haya errores."
+      ],
+      "answer": "A",
+      "explanation": "PII puede filtrarse en rutas técnicas aun si las consultas Gold aplican máscaras; la protección debe cubrir el ciclo de vida completo.",
+      "whyWrong": [
+        "Una máscara de UI no controla logs ni raw.",
+        "Más retención sin controles eleva exposición.",
+        "Eliminar validaciones empeora el control sin resolver privacidad."
+      ],
+      "source": "https://docs.databricks.com/aws/en/data-governance/unity-catalog/filters-and-masks",
+      "code": "",
+      "difficulty": "medium",
+      "type": "scenario",
+      "origin": "original basada en documentación oficial"
+    },
+    {
+      "id": "OF-048",
+      "domain": "06",
+      "objective": "06.05",
+      "title": "DELETE y derecho de supresión",
+      "stem": "Tras DELETE en una tabla Delta, el usuario ya no aparece en SELECT actual. ¿Qué afirmación es válida para verificar el derecho al borrado?",
+      "options": [
+        "La supresión está completada automáticamente en todos los backups y exports.",
+        "Debe revisarse la purga de archivos/historial según retención, los deletion vectors si aplican y las réplicas o derivados.",
+        "VACUUM sin retención elimina de inmediato cualquier backup externo.",
+        "La operación TRUNCATE sobre Gold elimina también los datos fuente de Bronze por linaje."
+      ],
+      "answer": "B",
+      "explanation": "El borrado lógico no garantiza eliminación física ni propagación a sistemas derivados; el proceso debe tener retención y evidencias de supresión.",
+      "whyWrong": [
+        "SELECT actual no prueba ausencia en todas las copias.",
+        "VACUUM no gestiona backups externos y está sujeto a retención.",
+        "El linaje no ejecuta automáticamente borrados descendentes o ascendentes."
+      ],
+      "source": "https://docs.databricks.com/aws/en/delta/vacuum",
+      "code": "",
+      "difficulty": "medium",
+      "type": "scenario",
+      "origin": "original basada en documentación oficial"
+    }
+  ]
+}
