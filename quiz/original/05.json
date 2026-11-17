@@ -77,7 +77,7 @@
         "No existe tal garantía de aceleración.",
         ""
       ],
-      "source": "https://spark.apache.org/docs/latest/sql-performance-tuning.html",
+      "source": "https://docs.databricks.com/aws/en/optimizations/disk-cache",
       "code": "",
       "difficulty": "medium",
       "type": "scenario",
