@@ -1,0 +1,82 @@
+{
+  "domain": "09",
+  "name": "Modelado analítico",
+  "weight": 5,
+  "questions": [
+    {
+      "id": "OF-058",
+      "domain": "09",
+      "objective": "09.01",
+      "title": "Compatibilidad Delta e Iceberg",
+      "stem": "Una tabla Gold debe ser leída por varias herramientas que incluyen motores Iceberg externos. Antes de elegir un formato, ¿qué comprobación es más importante?",
+      "options": [
+        "Validar soporte real de lectura/escritura del motor externo, protocolo/versiones, tipos, gobernanza y mantenimiento requeridos.",
+        "Suponer que todos los lectores Iceberg entienden cualquier feature Delta.",
+        "Desactivar transacciones para ganar interoperabilidad.",
+        "Crear un ZORDER de 100 columnas para traducir automáticamente formatos."
+      ],
+      "answer": "A",
+      "explanation": "La interoperabilidad requiere compatibilidad real entre engines, versiones de formato, capacidades, permisos y limitaciones de tipo, no solo que la extensión sea Parquet.",
+      "whyWrong": [
+        "El soporte de formatos/protocolos no es universal.",
+        "Desactivar transacciones sacrifica corrección.",
+        "ZORDER no es un convertidor entre Delta e Iceberg."
+      ],
+      "source": "https://docs.databricks.com/aws/en/iceberg/",
+      "code": "",
+      "difficulty": "medium",
+      "type": "scenario",
+      "origin": "original basada en documentación oficial"
+    },
+    {
+      "id": "OF-059",
+      "domain": "09",
+      "objective": "09.02",
+      "title": "Definir el grano de la tabla de hechos",
+      "stem": "Una empresa tiene pedidos con varias líneas. El dashboard quiere ventas por producto y por pedido. ¿Qué decisión debes tomar antes de modelar fact_sales?",
+      "options": [
+        "Definir si cada fila representa una línea de pedido o un pedido completo y ajustar medidas/joins a ese grano.",
+        "Crear de inmediato tres columnas con el nombre revenue.",
+        "Duplicar toda la tabla de clientes en cada línea sin clave.",
+        "Hacer SELECT DISTINCT para decidir el grano automáticamente."
+      ],
+      "answer": "A",
+      "explanation": "El grano define qué representa una fila y condiciona sumas, cardinalidades, dimensiones y duplicados; es una decisión de modelado esencial.",
+      "whyWrong": [
+        "El nombre de columna no define la semántica.",
+        "Duplicar atributos no resuelve granularidad.",
+        "DISTINCT no determina el evento analítico representado."
+      ],
+      "source": "https://docs.databricks.com/aws/en/ldp/concepts",
+      "code": "",
+      "difficulty": "medium",
+      "type": "scenario",
+      "origin": "original basada en documentación oficial"
+    },
+    {
+      "id": "OF-060",
+      "domain": "09",
+      "objective": "09.02",
+      "title": "Metric view o materialized view",
+      "stem": "Tres dashboards calculan net_revenue con reglas diferentes y el equipo quiere una definición central reutilizable. No exige precalcular físicamente el resultado en este paso. ¿Qué objeto encaja mejor?",
+      "options": [
+        "Una metric view que defina medidas y dimensiones gobernadas.",
+        "Una materialized view distinta en cada dashboard con lógica divergente.",
+        "Un CSV mensual enviado por correo.",
+        "Una transformación Python UDF separada para cada analista."
+      ],
+      "answer": "A",
+      "explanation": "Metric views centralizan definición semántica de medidas/dimensiones; una MV se orienta a mantener un resultado de consulta materializado, no por sí sola a asegurar semántica común.",
+      "whyWrong": [
+        "Distintas MVs pueden conservar definiciones incompatibles.",
+        "Un CSV no es una capa semántica reutilizable.",
+        "UDFs independientes mantienen discrepancias de definición."
+      ],
+      "source": "https://docs.databricks.com/aws/en/sql/language-manual/sql-ref-syntax-ddl-create-view",
+      "code": "",
+      "difficulty": "medium",
+      "type": "scenario",
+      "origin": "original basada en documentación oficial"
+    }
+  ]
+}
