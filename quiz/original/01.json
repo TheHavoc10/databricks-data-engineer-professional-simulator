@@ -90,7 +90,7 @@
       "objective": "01.04",
       "title": "Auto Loader ante nueva columna",
       "stem": "Una canalización con Auto Loader JSON, esquema inferido y addNewColumns detecta la columna coupon, no existente hasta hoy. ¿Qué comportamiento encaja con la documentación oficial?",
-      "code": ".option(\"cloudFiles.schemaLocation\", schema_path)\n.option(\"cloudFiles.schemaEvolutionMode\", \"addNewColumns\")\n.option(\"checkpointLocation\", checkpoint_path)",
+      "code": "stream = (spark.readStream.format(\"cloudFiles\")\n    .option(\"cloudFiles.format\", \"json\")\n    .option(\"cloudFiles.schemaLocation\", schema_path)\n    .option(\"cloudFiles.schemaEvolutionMode\", \"addNewColumns\")\n    .load(input_path))\nquery = (stream.writeStream\n    .option(\"checkpointLocation\", checkpoint_path)\n    .toTable(\"dev.bronze.orders\"))",
       "options": [
         "Se elimina coupon permanentemente y la consulta nunca necesita reiniciarse.",
         "Auto Loader actualiza el esquema guardado y puede detener el stream con UnknownFieldException; un reinicio continúa con el nuevo esquema.",
@@ -306,7 +306,7 @@
       "objective": "01.12",
       "title": "Watermark y tiempo de evento",
       "stem": "Un stream agrega ventas en ventanas de cinco minutos. Tiene withWatermark('event_time','10 minutes'). ¿Cuál es la interpretación correcta?",
-      "code": "events.withWatermark(\"event_time\", \"10 minutes\")\n  .groupBy(F.window(\"event_time\", \"5 minutes\")).count()",
+      "code": "(events.withWatermark(\"event_time\", \"10 minutes\")\n    .groupBy(F.window(\"event_time\", \"5 minutes\"))\n    .count())",
       "options": [
         "El watermark avanza según event-time observado y permite controlar estado y datos tardíos según la operación.",
         "La marca de agua fuerza automáticamente la ordenación global de todos los eventos.",
@@ -333,7 +333,7 @@
       "objective": "01.12",
       "title": "Sink externo con foreachBatch",
       "stem": "La función escribe cada microbatch a una API externa; el proceso cae después de recibir HTTP 200, pero antes de confirmar progreso. ¿Qué riesgo existe?",
-      "code": "def send(batch_df, batch_id):\n    # Enviar con clave de idempotencia derivada de batch_id\n    external_api.publish(batch_df, idempotency_key=str(batch_id))",
+      "code": "# Pseudocódigo: hay que serializar y autenticar la llamada.\ndef send(batch_df, batch_id):\n    payload = convert_to_payload(batch_df)\n    external_api.publish(payload, idempotency_key=str(batch_id))",
       "options": [
         "Databricks desactiva automáticamente el checkpoint de cualquier foreachBatch.",
         "La API siempre devuelve HTTP 409 cuando Spark reintenta.",
@@ -359,8 +359,8 @@
       "domain": "01",
       "objective": "01.07",
       "title": "SCD2: unión histórica correcta",
-      "stem": "Un cliente tenía región Norte hasta el 15 de marzo y Sur desde ese día. Quieres atribuir una compra del 10 de marzo según la región que tenía al comprar. ¿Cómo se relaciona con dim_customer SCD2?",
-      "code": "ON f.customer_id = d.customer_id\nAND f.order_date >= d.__START_AT\nAND (f.order_date < d.__END_AT OR d.__END_AT IS NULL)",
+      "stem": "Un cliente tenía región Norte hasta el 15 de marzo y Sur desde ese día. Una dimensión SCD2 utiliza marcas temporales efectivas en su sequence_by, de modo que __START_AT y __END_AT son timestamps. ¿Cómo atribuyes una compra del 10 de marzo a la región correcta?",
+      "code": "ON f.customer_id = d.customer_id\nAND f.order_ts >= d.__START_AT\nAND (f.order_ts < d.__END_AT OR d.__END_AT IS NULL)",
       "options": [
         "JOIN solo por customer_id sin filtrar versiones.",
         "JOIN por customer_id y fecha de compra dentro del intervalo de vigencia de la versión.",
@@ -368,7 +368,7 @@
         "Guardar la región actual de cada cliente directamente en todas las compras pasadas."
       ],
       "answer": "B",
-      "explanation": "El join as-of usa customer_id y un intervalo temporal para asociar el hecho con la versión válida en su fecha de negocio.",
+      "explanation": "El join as-of usa customer_id y un intervalo temporal para asociar el hecho con la versión válida en su fecha de negocio. Es imprescindible que la secuencia del CDC represente la misma línea temporal de negocio que order_ts; si se usan números de versión, se necesita una correspondencia temporal.",
       "whyWrong": [
         "Un join solo por clave puede multiplicar cada compra por todas las versiones.",
         "",
