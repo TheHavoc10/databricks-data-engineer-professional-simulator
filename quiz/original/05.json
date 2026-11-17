@@ -1,0 +1,232 @@
+{
+  "domain": "05",
+  "name": "Optimización y costes",
+  "weight": 15,
+  "questions": [
+    {
+      "id": "OF-035",
+      "domain": "05",
+      "objective": "05.01",
+      "title": "Predictive Optimization en tablas managed",
+      "stem": "Un equipo almacena tablas Delta administradas por Unity Catalog y desea reducir tareas manuales de mantenimiento. ¿Qué opción ofrece Databricks?",
+      "options": [
+        "Predictive Optimization para administrar operaciones compatibles de mantenimiento, evaluando su impacto.",
+        "Ejecutar CACHE TABLE una vez y asumir que reemplaza el mantenimiento permanente.",
+        "Desactivar el log transaccional para reducir CPU.",
+        "Crear cientos de particiones por ID con cardinalidad alta en todos los datasets."
+      ],
+      "answer": "A",
+      "explanation": "Predictive Optimization automatiza operaciones de mantenimiento compatibles, como OPTIMIZE y VACUUM, sobre tablas administradas cuando está habilitado.",
+      "whyWrong": [
+        "El cache no sustituye reescritura y limpieza de archivos.",
+        "El transaction log es parte de las garantías transaccionales.",
+        "Particionar por ID de alta cardinalidad puede generar demasiados archivos y carpetas."
+      ],
+      "source": "https://docs.databricks.com/aws/en/optimizations/predictive-optimization",
+      "code": "",
+      "difficulty": "medium",
+      "type": "scenario",
+      "origin": "original basada en documentación oficial"
+    },
+    {
+      "id": "OF-036",
+      "domain": "05",
+      "objective": "05.02",
+      "title": "Deletion vectors y purga física",
+      "stem": "Una DELETE elimina datos de un cliente de la vista actual de una tabla que usa deletion vectors. ¿Cuál de las afirmaciones es más precisa?",
+      "options": [
+        "La operación elimina físicamente e inmediatamente todos los bytes de ficheros anteriores.",
+        "Deletion vectors pueden marcar filas como eliminadas lógicamente, pero la purga física puede requerir operaciones posteriores y revisión de retención.",
+        "El motor convierte todas las tablas con DVs a CSV.",
+        "Los deletion vectors impiden ejecutar cualquier UPDATE posterior."
+      ],
+      "answer": "B",
+      "explanation": "Los deletion vectors posibilitan DML evitando ciertas reescrituras inmediatas; el cumplimiento de borrado requiere considerar archivos, mantenimiento y copias.",
+      "whyWrong": [
+        "Borrar lógicamente no equivale necesariamente a purga física.",
+        "No hay conversión implícita universal a CSV.",
+        "DVs no prohíben por sí solos las actualizaciones."
+      ],
+      "source": "https://docs.databricks.com/aws/en/tables/managed",
+      "code": "",
+      "difficulty": "medium",
+      "type": "scenario",
+      "origin": "original basada en documentación oficial"
+    },
+    {
+      "id": "OF-037",
+      "domain": "05",
+      "objective": "05.03",
+      "title": "Cache con un único escaneo",
+      "stem": "Un Job lee una tabla una sola vez, hace un JOIN y escribe el resultado; sufre spill de memoria. Un compañero propone cache() sobre el input para acelerar. ¿Qué evaluación es correcta?",
+      "options": [
+        "Cache siempre acelera cualquier query al menos el doble.",
+        "La cache probablemente no ayuda si no hay reutilización y puede aumentar presión de memoria; hay que diagnosticar el spill.",
+        "Cache elimina automáticamente todo shuffle de Spark.",
+        "Cache evita que la tabla de origen sea consultada por otros usuarios."
+      ],
+      "answer": "B",
+      "explanation": "Cache está pensado para reutilización; con un solo uso, materializarlo consume recursos sin una ganancia clara y puede aumentar spill.",
+      "whyWrong": [
+        "No existe tal garantía de aceleración.",
+        "Los joins y agregaciones pueden seguir provocando shuffle.",
+        "No es un bloqueo de acceso a la tabla."
+      ],
+      "source": "https://spark.apache.org/docs/latest/sql-performance-tuning.html",
+      "code": "",
+      "difficulty": "medium",
+      "type": "scenario",
+      "origin": "original basada en documentación oficial"
+    },
+    {
+      "id": "OF-038",
+      "domain": "05",
+      "objective": "05.04",
+      "title": "CDF y metadatos de cambio",
+      "stem": "Se necesita replicar cambios de orders sin volver a leer 300 M de filas en cada ejecución. ¿Qué datos aporta CDF para distinguir operaciones?",
+      "options": [
+        "Solo el resultado de count(*) de la tabla.",
+        "Filas cambiadas y metadatos como _change_type y _commit_version mediante APIs de CDF.",
+        "Únicamente las filas activas sin deletes ni actualizaciones.",
+        "Una copia de los notebooks que escribieron la tabla."
+      ],
+      "answer": "B",
+      "explanation": "CDF describe eventos de insert/update/delete y versiones de commit, facilitando consumidores incrementales.",
+      "whyWrong": [
+        "Un agregado count no identifica filas ni cambios.",
+        "CDF puede incluir cambios distintos de insert.",
+        "Los notebooks no son un registro fila-a-fila de cambios."
+      ],
+      "source": "https://docs.databricks.com/aws/en/tables/features/change-data-feed",
+      "code": "SELECT _change_type, _commit_version, order_id\nFROM table_changes('dev.silver.orders', 15, 18);",
+      "difficulty": "hard",
+      "type": "code",
+      "origin": "original basada en documentación oficial"
+    },
+    {
+      "id": "OF-039",
+      "domain": "05",
+      "objective": "05.05",
+      "title": "Identificar skew mediante tareas",
+      "stem": "Una etapa Spark tiene 63 tareas de 2 segundos y una de 6 minutos, con muchos más shuffle bytes en la tarea lenta. ¿Cuál es la hipótesis inicial más sólida?",
+      "options": [
+        "Skew de claves/particiones que concentra datos en una tarea.",
+        "Insuficiente número de comentarios de las tablas.",
+        "Un error de sintaxis SQL que impide crear cualquier tarea.",
+        "Que los usuarios de UC no tengan SELECT sobre la tabla."
+      ],
+      "answer": "A",
+      "explanation": "Una cola larga de pocas tareas sobrecargadas es un síntoma típico de skew, verificable con distribución de tareas, claves y tamaños.",
+      "whyWrong": [
+        "Comentarios del catálogo no equilibran particiones.",
+        "Si hay tareas que terminaron, la consulta se está ejecutando.",
+        "Una falta general de SELECT suele impedir antes la consulta."
+      ],
+      "source": "https://docs.databricks.com/aws/en/optimizations/query-profile",
+      "code": "",
+      "difficulty": "medium",
+      "type": "scenario",
+      "origin": "original basada en documentación oficial"
+    },
+    {
+      "id": "OF-040",
+      "domain": "05",
+      "objective": "05.06",
+      "title": "ZORDER en tabla liquid-clustered",
+      "stem": "Una tabla Delta ha sido creada con liquid clustering. ¿Qué mantenimiento físico es coherente con este layout?",
+      "options": [
+        "OPTIMIZE ZORDER BY sobre las mismas columnas de clustering.",
+        "Ejecutar OPTIMIZE para que el mantenimiento respete liquid clustering, sin mezclarlo con ZORDER.",
+        "Cambiar cada semana a partitionBy de alta cardinalidad.",
+        "Crear una copia CSV porque clustering no funciona en Delta."
+      ],
+      "answer": "B",
+      "explanation": "Liquid clustering es una estrategia de layout distinta de ZORDER y particionado tradicional; OPTIMIZE funciona con su clustering.",
+      "whyWrong": [
+        "ZORDER no se combina con liquid clustering en la misma tabla.",
+        "Repartir por altas cardinalidades es una mala política de organización.",
+        "Delta sí soporta liquid clustering."
+      ],
+      "source": "https://docs.databricks.com/aws/en/delta/clustering",
+      "code": "CREATE TABLE dev.gold.orders (\n order_id BIGINT, customer_id BIGINT, amount DOUBLE\n) CLUSTER BY (customer_id);",
+      "difficulty": "hard",
+      "type": "code",
+      "origin": "original basada en documentación oficial"
+    },
+    {
+      "id": "OF-041",
+      "domain": "05",
+      "objective": "05.02",
+      "title": "CLUSTER BY AUTO",
+      "stem": "Una tabla UC managed sirve consultas cuyos filtros cambian frecuentemente. ¿Qué significa utilizar CLUSTER BY AUTO en un entorno compatible?",
+      "options": [
+        "Los datos quedan siempre ordenados por todas las columnas en cada lectura.",
+        "Databricks puede seleccionar y adaptar claves de liquid clustering según patrones de uso mediante optimización predictiva.",
+        "La tabla se particiona obligatoriamente por el primer campo de fecha.",
+        "Todas las tablas externas se convierten automáticamente en managed."
+      ],
+      "answer": "B",
+      "explanation": "CLUSTER BY AUTO permite a Databricks elegir y evolucionar las claves del layout en tablas compatibles usando señales del workload.",
+      "whyWrong": [
+        "No existe orden total garantizado para todas las columnas.",
+        "La elección de claves no equivale a particionado fijo.",
+        "El clustering no altera por sí solo el tipo de propiedad de tabla."
+      ],
+      "source": "https://docs.databricks.com/aws/en/delta/clustering",
+      "code": "CREATE TABLE dev.gold.events(\n event_id BIGINT, customer_id BIGINT, ts TIMESTAMP\n) CLUSTER BY AUTO;",
+      "difficulty": "hard",
+      "type": "code",
+      "origin": "original basada en documentación oficial"
+    },
+    {
+      "id": "OF-042",
+      "domain": "05",
+      "objective": "05.05",
+      "title": "Broadcast de dimensión pequeña",
+      "stem": "En un EXPLAIN, un JOIN entre fact_orders de 4 TB y dim_country de 2 MB usa SortMergeJoin y mucho shuffle. Si el tipo de JOIN lo permite, ¿qué optimización merece una prueba medida?",
+      "options": [
+        "Broadcast de dim_country para evitar shuffle del lado grande.",
+        "Broadcast de fact_orders de 4 TB a todos los ejecutores.",
+        "Incrementar indiscriminadamente el tamaño del cluster sin analizar el plan.",
+        "Aplicar VACUUM en la dimensión para que Spark deje de hacer JOIN."
+      ],
+      "answer": "A",
+      "explanation": "Difundir una dimensión pequeña entre ejecutores puede permitir broadcast hash join y evitar redistribución del conjunto grande, cuando la semántica lo soporta.",
+      "whyWrong": [
+        "Difundir 4 TB sería inviable.",
+        "Más hardware puede ocultar pero no resolver un plan subóptimo.",
+        "VACUUM no cambia la estrategia de join por sí solo."
+      ],
+      "source": "https://docs.databricks.com/aws/en/optimizations/query-profile",
+      "code": "SELECT /*+ BROADCAST(c) */ *\nFROM fact_orders f JOIN dim_country c ON f.country_id=c.id;",
+      "difficulty": "hard",
+      "type": "code",
+      "origin": "original basada en documentación oficial"
+    },
+    {
+      "id": "OF-043",
+      "domain": "05",
+      "objective": "05.01",
+      "title": "Small files y data skipping",
+      "stem": "Tras cientos de microbatches hay decenas de miles de archivos Delta pequeños. Lecturas con filtro por customer_id se degradan. ¿Qué conjunto de acciones es más sensato?",
+      "options": [
+        "Ejecutar VACUUM sin medir y asumir que compactará los ficheros actuales.",
+        "Revisar tamaño/cantidad de archivos, ejecutar mantenimiento OPTIMIZE compatible y evaluar clustering según filtros reales.",
+        "Cambiar todos los campos STRING a BINARY como primera medida.",
+        "Crear un proceso que haga CACHE sobre cada archivo individual en disco."
+      ],
+      "answer": "B",
+      "explanation": "La compactación y el layout físico pueden reducir overhead de archivos y mejorar pruning. Deben medirse sobre el workload; VACUUM elimina históricos no referenciados.",
+      "whyWrong": [
+        "VACUUM no es la herramienta principal para compactar archivos activos.",
+        "Cambiar tipos de columnas no corrige el problema de archivos pequeños.",
+        "Cachear archivos individuales no es una estrategia general sostenible."
+      ],
+      "source": "https://docs.databricks.com/aws/en/delta/optimize",
+      "code": "",
+      "difficulty": "medium",
+      "type": "scenario",
+      "origin": "original basada en documentación oficial"
+    }
+  ]
+}
