@@ -23,7 +23,7 @@
         "Cambios arbitrarios impiden atribuir mejoras y pueden agravar el problema.",
         "Cambiar tipos masivamente no resuelve el plan de join."
       ],
-      "source": "https://docs.databricks.com/aws/en/optimizations/query-profile",
+      "source": "https://docs.databricks.com/aws/en/sql/user/queries/query-profile",
       "code": "",
       "difficulty": "medium",
       "type": "scenario",
