@@ -10,23 +10,25 @@
       "title": "Diagnosis de OOM en shuffle",
       "stem": "Un Job falla en una task de JOIN por OOM durante shuffle. El plan muestra grandes intercambios y valores de skew. ¿Cuál es el orden de diagnóstico más útil?",
       "options": [
+        "Ejecutar VACUUM sobre las tablas para corregir la memoria JVM.",
         "Inspeccionar Query Profile/Spark UI para identificar particiones sesgadas, tamaños y operadores antes de modificar parámetros.",
         "Aumentar spark.sql.shuffle.partitions a un valor aleatorio y cerrar la investigación.",
-        "Cambiar todos los esquemas de STRING a BINARY de forma preventiva.",
-        "Ejecutar VACUUM sobre las tablas para corregir la memoria JVM."
+        "Cambiar todos los esquemas de STRING a BINARY de forma preventiva."
       ],
-      "answer": "A",
+      "answer": "B",
       "explanation": "Una hipótesis basada en métricas permite elegir broadcast, tratamiento de skew, número de particiones o cambios lógicos según causa observable.",
       "whyWrong": [
+        "VACUUM elimina ficheros históricos, no corrige OOM de shuffle.",
+        "",
         "Cambios arbitrarios impiden atribuir mejoras y pueden agravar el problema.",
-        "Cambiar tipos masivamente no resuelve el plan de join.",
-        "VACUUM elimina ficheros históricos, no corrige OOM de shuffle."
+        "Cambiar tipos masivamente no resuelve el plan de join."
       ],
       "source": "https://docs.databricks.com/aws/en/optimizations/query-profile",
       "code": "",
       "difficulty": "medium",
       "type": "scenario",
-      "origin": "original basada en documentación oficial"
+      "origin": "original basada en documentación oficial",
+      "reviewedFor": "2026-objective-mapping-and-option-alignment"
     },
     {
       "id": "OF-053",
@@ -35,23 +37,25 @@
       "title": "Repair run tras escritura parcial",
       "stem": "En un workflow, task Bronze termina, task Silver publica datos correctamente y task Gold falla. El operador propone reparar directamente. ¿Qué riesgo hay que evaluar primero?",
       "options": [
-        "Que Repair borre automáticamente los commits Bronze/Silver.",
         "Los efectos de tareas previas no se revierten; hay que comprobar idempotencia y qué tareas se reejecutarán.",
         "Que reparar siempre ejecuta todo el Job desde cero con un checkpoint nuevo.",
-        "Que una reparación impide revisar los parámetros originales."
+        "Que una reparación impide revisar los parámetros originales.",
+        "Que Repair borre automáticamente los commits Bronze/Silver."
       ],
-      "answer": "B",
+      "answer": "A",
       "explanation": "Repair no es rollback de las acciones ya realizadas, por lo que deben revisarse los efectos externos y la repetibilidad de tareas.",
       "whyWrong": [
-        "Los commits ya finalizados no se deshacen automáticamente.",
+        "",
         "No todas las reparaciones implican reejecutar todo.",
-        "Los parámetros se pueden inspeccionar y, según soporte, modificar."
+        "Los parámetros se pueden inspeccionar y, según soporte, modificar.",
+        "Los commits ya finalizados no se deshacen automáticamente."
       ],
       "source": "https://docs.databricks.com/aws/en/jobs/repair-job-failures",
       "code": "",
       "difficulty": "medium",
       "type": "scenario",
-      "origin": "original basada en documentación oficial"
+      "origin": "original basada en documentación oficial",
+      "reviewedFor": "2026-objective-mapping-and-option-alignment"
     },
     {
       "id": "OF-054",
@@ -68,6 +72,7 @@
       "answer": "A",
       "explanation": "bundle validate comprueba configuración y recursos declarados, sin ejecutar el Job; deploy es la fase posterior de publicación.",
       "whyWrong": [
+        "",
         "bundle run intenta iniciar un recurso y afecta PROD.",
         "destroy elimina recursos desplegados según el proyecto.",
         "La eliminación masiva no es validación."
@@ -76,7 +81,8 @@
       "code": "databricks bundle validate -t dev\ndatabricks bundle deploy -t dev\ndatabricks bundle run -t dev order_etl",
       "difficulty": "hard",
       "type": "code",
-      "origin": "original basada en documentación oficial"
+      "origin": "original basada en documentación oficial",
+      "reviewedFor": "2026-objective-mapping-and-option-alignment"
     },
     {
       "id": "OF-055",
@@ -85,23 +91,25 @@
       "title": "Git Merge y despliegue",
       "stem": "Una persona ha hecho commit y push de su rama feature. Quiere integrar cambios revisados en main y promocionarlos a PROD con control de cambios. ¿Cuál es el proceso adecuado?",
       "options": [
-        "Merge/PR en proveedor Git, pruebas CI y despliegue CD del bundle aprobado a PROD.",
-        "Ejecutar git pull desde cualquier notebook en PROD y asumir que eso despliega todos los Jobs.",
         "Usar el botón Clone de Git folders para fusionar automáticamente branches.",
-        "Conceder MANAGE a todos los developers y editar manualmente cada Job en PROD."
+        "Conceder MANAGE a todos los developers y editar manualmente cada Job en PROD.",
+        "Merge/PR en proveedor Git, pruebas CI y despliegue CD del bundle aprobado a PROD.",
+        "Ejecutar git pull desde cualquier notebook en PROD y asumir que eso despliega todos los Jobs."
       ],
-      "answer": "A",
+      "answer": "C",
       "explanation": "Git resuelve revisión y fusión del código; CI valida; CD despliega el artefacto/configuración objetivo. Pull no equivale a merge ni a deploy.",
       "whyWrong": [
-        "Pull sincroniza código, no garantiza actualizar recursos configurados.",
         "Clone crea copia de trabajo, no integra automáticamente una PR.",
-        "Cambios manuales sin gobernanza introducen deriva."
+        "Cambios manuales sin gobernanza introducen deriva.",
+        "",
+        "Pull sincroniza código, no garantiza actualizar recursos configurados."
       ],
       "source": "https://docs.databricks.com/aws/en/repos/",
       "code": "",
       "difficulty": "medium",
       "type": "scenario",
-      "origin": "original basada en documentación oficial"
+      "origin": "original basada en documentación oficial",
+      "reviewedFor": "2026-objective-mapping-and-option-alignment"
     },
     {
       "id": "OF-056",
@@ -110,23 +118,25 @@
       "title": "Target de bundle mal parametrizado",
       "stem": "Un Job desplegado en PROD escribe en dev.silver.orders porque el catalog estaba fijado en el notebook. ¿Qué diseño evita el error?",
       "options": [
-        "Usar variables/configuración por target, comprobar el catálogo efectivo en predeploy y ejecutar pruebas de integración.",
         "Crear una copia del notebook por cada desarrollador, con strings distintos.",
         "Permitir que el Job detecte el destino por el usuario que abra la web.",
-        "Deshabilitar tests CI porque el deploy fue SUCCESS."
+        "Deshabilitar tests CI porque el deploy fue SUCCESS.",
+        "Usar variables/configuración por target, comprobar el catálogo efectivo en predeploy y ejecutar pruebas de integración."
       ],
-      "answer": "A",
+      "answer": "D",
       "explanation": "Los targets de un bundle permiten parametrizar recursos por entorno; los identificadores de destino deben derivarse de configuración controlada y validada.",
       "whyWrong": [
         "Duplicar notebooks crea deriva.",
         "El destino no debe depender de quién navegue por la UI.",
-        "Deploy exitoso no demuestra consistencia de referencias de datos."
+        "Deploy exitoso no demuestra consistencia de referencias de datos.",
+        ""
       ],
       "source": "https://docs.databricks.com/aws/en/dev-tools/bundles/settings",
       "code": "targets:\n  dev:\n    mode: development\n    variables: { catalog: \"dev\" }\n  prod:\n    mode: production\n    variables: { catalog: \"prod\" }",
       "difficulty": "hard",
       "type": "code",
-      "origin": "original basada en documentación oficial"
+      "origin": "original basada en documentación oficial",
+      "reviewedFor": "2026-objective-mapping-and-option-alignment"
     },
     {
       "id": "OF-057",
@@ -135,23 +145,25 @@
       "title": "Falla programado, funciona en notebook",
       "stem": "El mismo SELECT funciona desde una sesión interactiva, pero el Job falló tras trasladarlo a la identidad svc_deploy. ¿Qué evidencia ayuda a aislar la causa?",
       "options": [
+        "La configuración de color del tema de GitHub.",
         "Identidad run-as, grants UC sobre catalog/schema/table y parámetros efectivos del Job.",
         "La resolución de pantalla de quien ejecutó el notebook.",
-        "El número de archivos README del repositorio.",
-        "La configuración de color del tema de GitHub."
+        "El número de archivos README del repositorio."
       ],
-      "answer": "A",
+      "answer": "B",
       "explanation": "Un cambio de identidad o parámetros es un origen frecuente de discrepancias; hay que identificar y contrastar permisos y recursos efectivos.",
       "whyWrong": [
+        "El tema visual no altera ejecución SQL.",
+        "",
         "La interfaz visual no modifica grants UC.",
-        "La documentación del repositorio no concede permisos.",
-        "El tema visual no altera ejecución SQL."
+        "La documentación del repositorio no concede permisos."
       ],
       "source": "https://docs.databricks.com/aws/en/jobs/",
       "code": "",
       "difficulty": "medium",
       "type": "scenario",
-      "origin": "original basada en documentación oficial"
+      "origin": "original basada en documentación oficial",
+      "reviewedFor": "2026-objective-mapping-and-option-alignment"
     }
   ]
 }
