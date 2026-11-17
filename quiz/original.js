@@ -66,14 +66,14 @@ function grid(){
 }
 function active(){
  const s=state.session,q=current(),st=score(s),width=Math.round(100*st.answered/st.total);
- return '<div class="oq-session-top"><div><div class="eyebrow">'+(s.mode==="exam"?"SIMULACRO / 120 MINUTOS":"ESTUDIO / CORRECCIÓN INMEDIATA")+'</div><h1>Professional 2026</h1></div><div class="oq-session-tools"><span class="oq-clock" id="oq-clock">'+timerText(s)+'</span><button class="button ghost small" data-oq="exit">Salir</button></div></div>'+
+ return '<div class="oq-session-top"><div><div class="eyebrow">'+(s.mode==="exam"?"SIMULACRO / 120 MINUTOS":"ESTUDIO / CORRECCIÓN INMEDIATA")+'</div><h1>Professional 2026</h1></div><div class="oq-session-tools"><span class="oq-clock" id="oq-clock">'+timerText(s)+'</span><button class="button ghost small" data-oq="new">Nuevo intento</button><button class="button ghost small" data-oq="exit">Salir</button></div></div>'+
  '<div class="oq-track"><span>Contestadas '+st.answered+' / '+st.total+'</span><div class="oq-track-line"><i style="width:'+width+'%"></i></div><span>Bloque '+q.domain+' · '+esc(NAMES[q.domain])+'</span></div>'+
  '<div class="oq-layout"><div class="oq-main">'+question()+navigation()+
- (s.mode==="exam"?'<div class="oq-finish-row"><button class="button ghost" data-oq="finish">Finalizar examen y corregir</button></div>':'')+'</div>'+grid()+'</div>';
+ '<div class="oq-finish-row"><button class="button ghost" data-oq="finish">Finalizar y ver resultados</button></div>'+'</div>'+grid()+'</div>';
 }
 function finish(auto=false){
  const s=state.session;if(!s||s.finished)return;
- if(!auto&&s.mode==="exam"&&!confirm("¿Quieres finalizar el simulacro y ver la corrección? Quedarán "+(score(s).total-score(s).answered)+" preguntas sin responder."))return;
+ if(!auto&&!confirm("¿Quieres finalizar el simulacro y ver la corrección? Quedarán "+(score(s).total-score(s).answered)+" preguntas sin responder."))return;
  s.finished=true;s.finishedAt=Date.now();
  const st=score(s);
  if(s.mode==="exam"){state.history.push({date:new Date().toISOString(),correct:st.correct,total:st.total,percent:st.percent,minutes:Math.min(120,Math.max(0,Math.round((s.finishedAt-s.startedAt)/60000)))});state.history=state.history.slice(-30)}
@@ -120,6 +120,7 @@ function onClick(event){
  else if(op==="goto"){s.index=Number(b.dataset.pos);showSolution=false;chooseCache=null;save();render()}
  else if(op==="flag"){s.flags[current().id]=!s.flags[current().id];save();render()}
  else if(op==="finish")finish();
+ else if(op==="new"){if(confirm("¿Descartar este intento y volver al menú principal?")){state.session=null;save();render()}}
  else if(op==="exit"){if(confirm("¿Salir del intento actual? Podrás continuarlo más tarde o empezar otro.")){location.hash="#/academy"}}
  else if(op==="reset"){state.session=null;save();render()}
  else if(op==="review"){const n=Number(b.dataset.pos);s.index=n;state.session.review=true;save();renderReview();}
