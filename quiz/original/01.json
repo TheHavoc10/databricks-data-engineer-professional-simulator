@@ -11,22 +11,24 @@
       "stem": "Un equipo tiene 16 notebooks que copian la misma función de validación. Necesita testearla con pytest y desplegar Jobs en DEV y PROD mediante Declarative Automation Bundles. ¿Qué estructura evita acoplar la lógica a un workspace?",
       "code": "",
       "options": [
-        "Guardar toda la lógica en databricks.yml para que Bundles la ejecute directamente.",
-        "Extraer la lógica a módulos Python instalables, crear tests/ y usar resources/*.yml para definir los Jobs.",
         "Duplicar la función en cada notebook y sincronizar los cambios mediante Git folders.",
-        "Guardar los tests dentro del catálogo y ejecutarlos únicamente tras desplegar a PROD."
+        "Guardar los tests dentro del catálogo y ejecutarlos únicamente tras desplegar a PROD.",
+        "Guardar toda la lógica en databricks.yml para que Bundles la ejecute directamente.",
+        "Extraer la lógica a módulos Python instalables, crear tests/ y usar resources/*.yml para definir los Jobs."
       ],
-      "answer": "B",
+      "answer": "D",
       "explanation": "Los módulos Python son testables y reutilizables; el bundle declara recursos y targets sin contener la implementación de cada transformación.",
       "whyWrong": [
-        "databricks.yml describe configuraciones y recursos, no sustituye un paquete Python.",
         "Git evita pérdida de cambios pero no elimina duplicación de lógica.",
-        "Las pruebas deben ejecutarse antes del despliegue a PROD, preferentemente en CI."
+        "Las pruebas deben ejecutarse antes del despliegue a PROD, preferentemente en CI.",
+        "databricks.yml describe configuraciones y recursos, no sustituye un paquete Python.",
+        ""
       ],
       "source": "https://docs.databricks.com/aws/en/dev-tools/bundles/",
       "difficulty": "medium",
       "type": "scenario",
-      "origin": "original basada en documentación oficial"
+      "origin": "original basada en documentación oficial",
+      "reviewedFor": "2026-objective-mapping-and-option-alignment"
     },
     {
       "id": "OF-002",
@@ -36,22 +38,24 @@
       "stem": "El Job de PROD lanza ModuleNotFoundError mientras el mismo notebook en un cluster de desarrollo importa correctamente orderstream. ¿Qué se debe verificar primero?",
       "code": "",
       "options": [
-        "Que el nuevo catálogo use una política de clustering compatible.",
-        "La versión del wheel instalada en la task, las dependencias declaradas y el entorno real de ejecución.",
         "Que el notebook tenga un SELECT al inicio para inicializar Spark.",
-        "Que el usuario abra el repositorio desde Git folders antes de cada run."
+        "Que el usuario abra el repositorio desde Git folders antes de cada run.",
+        "Que el nuevo catálogo use una política de clustering compatible.",
+        "La versión del wheel instalada en la task, las dependencias declaradas y el entorno real de ejecución."
       ],
-      "answer": "B",
+      "answer": "D",
       "explanation": "La librería puede faltar o tener otra versión en el compute real de la tarea, especialmente entre modalidades de ejecución.",
       "whyWrong": [
-        "Clustering no determina importaciones Python.",
         "Un SELECT no instala librerías ni resuelve el paquete ausente.",
-        "Git folders gestiona código, no asegura por sí solo las dependencias de cada task."
+        "Git folders gestiona código, no asegura por sí solo las dependencias de cada task.",
+        "Clustering no determina importaciones Python.",
+        ""
       ],
       "source": "https://docs.databricks.com/aws/en/dev-tools/bundles/library-dependencies",
       "difficulty": "medium",
       "type": "scenario",
-      "origin": "original basada en documentación oficial"
+      "origin": "original basada en documentación oficial",
+      "reviewedFor": "2026-objective-mapping-and-option-alignment"
     },
     {
       "id": "OF-003",
@@ -61,22 +65,24 @@
       "stem": "Hay que convertir millones de códigos de país a mayúsculas y eliminar espacios. ¿Qué implementación suele preservar mejor las optimizaciones de Spark?",
       "code": "from pyspark.sql import functions as F\nnormalizado = df.withColumn(\"country\", F.upper(F.trim(\"country\")))",
       "options": [
-        "Una Python UDF fila a fila porque ejecuta la transformación en paralelo.",
-        "Una Pandas UDF, incluso si las funciones SQL hacen exactamente lo mismo.",
         "Expresiones nativas upper(trim(col)) sobre DataFrames o SQL.",
-        "Una función en un script externo invocada mediante subprocess por fila."
+        "Una función en un script externo invocada mediante subprocess por fila.",
+        "Una Python UDF fila a fila porque ejecuta la transformación en paralelo.",
+        "Una Pandas UDF, incluso si las funciones SQL hacen exactamente lo mismo."
       ],
-      "answer": "C",
+      "answer": "A",
       "explanation": "upper y trim son funciones nativas que el optimizador conoce y evitan el coste habitual de serialización JVM/Python.",
       "whyWrong": [
+        "",
+        "Invocar subprocesos por fila suele ser más caro y difícil de operar.",
         "La ejecución paralela no elimina el coste de serializar Python UDFs.",
-        "Pandas UDF vectoriza, pero introduce complejidad sin necesidad para built-ins equivalentes.",
-        "Invocar subprocesos por fila suele ser más caro y difícil de operar."
+        "Pandas UDF vectoriza, pero introduce complejidad sin necesidad para built-ins equivalentes."
       ],
       "source": "https://docs.databricks.com/aws/en/udf/",
       "difficulty": "hard",
       "type": "code",
-      "origin": "original basada en documentación oficial"
+      "origin": "original basada en documentación oficial",
+      "reviewedFor": "2026-objective-mapping-and-option-alignment"
     },
     {
       "id": "OF-004",
@@ -95,13 +101,15 @@
       "explanation": "En addNewColumns, detectar columnas nuevas actualiza el esquema en schemaLocation y detiene la consulta; la recuperación requiere reinicio gestionado.",
       "whyWrong": [
         "Ignorar datos nuevos corresponde a otras políticas, no a addNewColumns.",
+        "",
         "Borrar checkpoint puede causar relectura y no es la solución recomendada.",
         "VACUUM retira archivos obsoletos; no resuelve la evolución de esquema."
       ],
       "source": "https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/auto-loader/schema",
       "difficulty": "hard",
       "type": "code",
-      "origin": "original basada en documentación oficial"
+      "origin": "original basada en documentación oficial",
+      "reviewedFor": "2026-objective-mapping-and-option-alignment"
     },
     {
       "id": "OF-005",
@@ -111,22 +119,24 @@
       "stem": "La fuente recibe eventos cada segundo, pero la empresa quiere lanzar cada hora un Job que procese todo lo pendiente y termine para no mantener compute continuamente. ¿Qué trigger se ajusta mejor?",
       "code": "(stream.writeStream\n .trigger(availableNow=True)\n .option(\"checkpointLocation\", checkpoint)\n .toTable(\"dev.bronze.events\"))",
       "options": [
-        "processingTime='1 hour' dentro de un stream permanente.",
-        "availableNow=True en una ejecución programada del Job.",
         "continuous='1 hour' con checkpoint temporal.",
-        "Eliminar el checkpoint al terminar cada actualización."
+        "Eliminar el checkpoint al terminar cada actualización.",
+        "processingTime='1 hour' dentro de un stream permanente.",
+        "availableNow=True en una ejecución programada del Job."
       ],
-      "answer": "B",
+      "answer": "D",
       "explanation": "AvailableNow procesa lo disponible en lotes y finaliza. El scheduler determina cuándo se inicia el Job; el stream no queda corriendo una hora entera.",
       "whyWrong": [
-        "processingTime regula microbatches de un stream activo, no garantiza finalizar tras procesar los datos.",
         "Continuous no es un trigger de terminación horaria.",
-        "Eliminar checkpoint perjudica la recuperación incremental."
+        "Eliminar checkpoint perjudica la recuperación incremental.",
+        "processingTime regula microbatches de un stream activo, no garantiza finalizar tras procesar los datos.",
+        ""
       ],
       "source": "https://docs.databricks.com/aws/en/jobs/",
       "difficulty": "hard",
       "type": "code",
-      "origin": "original basada en documentación oficial"
+      "origin": "original basada en documentación oficial",
+      "reviewedFor": "2026-objective-mapping-and-option-alignment"
     },
     {
       "id": "OF-006",
@@ -136,22 +146,24 @@
       "stem": "Una tabla Silver admite cambios retroactivos de facturas. Gold necesita mantener la suma mensual correctamente después de cada rectificación. ¿Qué diseño es generalmente más apropiado?",
       "code": "",
       "options": [
+        "Una vista de Python que capture el valor inicial en memoria.",
         "Streaming table que solo procesa nuevas filas y asume que leerá todas las rectificaciones pasadas.",
         "Materialized view cuyo resultado refleje los datos actuales de Silver según su política de refresco.",
-        "Snapshot de Gold inicial y no volver a refrescarlo.",
-        "Una vista de Python que capture el valor inicial en memoria."
+        "Snapshot de Gold inicial y no volver a refrescarlo."
       ],
-      "answer": "B",
+      "answer": "C",
       "explanation": "Las materialized views mantienen el resultado de consultas y suelen encajar cuando el origen mutable exige corregir agregados históricos.",
       "whyWrong": [
+        "Capturar un agregado en memoria no asegura persistencia ni actualización.",
         "Una streaming table append-only no garantiza reprocesar correcciones históricas.",
-        "El snapshot queda obsoleto tras rectificaciones.",
-        "Capturar un agregado en memoria no asegura persistencia ni actualización."
+        "",
+        "El snapshot queda obsoleto tras rectificaciones."
       ],
       "source": "https://docs.databricks.com/aws/en/ldp/concepts",
       "difficulty": "medium",
       "type": "scenario",
-      "origin": "original basada en documentación oficial"
+      "origin": "original basada en documentación oficial",
+      "reviewedFor": "2026-objective-mapping-and-option-alignment"
     },
     {
       "id": "OF-007",
@@ -161,22 +173,24 @@
       "stem": "La fuente genera customer_id=8 con versiones: 100→Madrid, 103→Burgos y 102→León. Los eventos llegan en orden 100, 103, 102. ¿Qué debe usarse como sequence_by en AUTO CDC?",
       "code": "dp.create_auto_cdc_flow(\n target=\"customers\", source=\"changes\",\n keys=[\"customer_id\"],\n sequence_by=col(\"change_version\"),\n stored_as_scd_type=\"2\")",
       "options": [
-        "La fecha de llegada al Lakehouse, para reflejar el orden de recepción.",
-        "customer_id, porque identifica la entidad.",
         "La versión lógica del cambio, para recuperar el orden transaccional aun si llegan eventos tardíos.",
-        "Una columna calculada al azar para distribuir la carga."
+        "Una columna calculada al azar para distribuir la carga.",
+        "La fecha de llegada al Lakehouse, para reflejar el orden de recepción.",
+        "customer_id, porque identifica la entidad."
       ],
-      "answer": "C",
+      "answer": "A",
       "explanation": "La secuencia lógica evita que la versión 102 recibida al final sobrescriba indebidamente el estado posterior de la versión 103.",
       "whyWrong": [
+        "",
+        "Una secuencia no determinista destruye el orden de cambios.",
         "La ingesta física puede ocurrir fuera de orden.",
-        "La clave identifica filas, no ordena cambios de una misma fila.",
-        "Una secuencia no determinista destruye el orden de cambios."
+        "La clave identifica filas, no ordena cambios de una misma fila."
       ],
       "source": "https://docs.databricks.com/aws/en/ldp/cdc",
       "difficulty": "hard",
       "type": "code",
-      "origin": "original basada en documentación oficial"
+      "origin": "original basada en documentación oficial",
+      "reviewedFor": "2026-objective-mapping-and-option-alignment"
     },
     {
       "id": "OF-008",
@@ -195,13 +209,15 @@
       "explanation": "Lakeflow Pipelines está diseñado para declarar datasets y flujos con mecanismos administrados de calidad, refresh y CDC.",
       "whyWrong": [
         "La API directa sirve, pero añadir control imperativo sin necesidad complica mantenimiento.",
+        "",
         "Exportar cada lote introduce fragilidad, latencia y trabajo innecesario.",
         "El SQL Warehouse puede ejecutar consultas; no sustituye automáticamente el grafo declarativo."
       ],
       "source": "https://docs.databricks.com/aws/en/ldp/concepts",
       "difficulty": "medium",
       "type": "scenario",
-      "origin": "original basada en documentación oficial"
+      "origin": "original basada en documentación oficial",
+      "reviewedFor": "2026-objective-mapping-and-option-alignment"
     },
     {
       "id": "OF-009",
@@ -211,22 +227,24 @@
       "stem": "Un flujo recibe una lista JSON de 12 tablas y debe lanzar el mismo notebook parametrizado para cada una, controlando su concurrencia. ¿Qué tarea de Lakeflow Jobs resuelve el patrón?",
       "code": "",
       "options": [
+        "Una materialized view que invoque el notebook en cada fila.",
         "If/Else con 12 condiciones idénticas.",
         "For Each con tarea anidada y parámetros por iteración.",
-        "Una expectation de Lakeflow por cada tabla.",
-        "Una materialized view que invoque el notebook en cada fila."
+        "Una expectation de Lakeflow por cada tabla."
       ],
-      "answer": "B",
+      "answer": "C",
       "explanation": "For Each itera sobre una colección e invoca una tarea anidada con parámetros; permite configurar paralelismo.",
       "whyWrong": [
+        "Las materialized views no actúan como orquestadores de notebooks.",
         "If/Else solo elige ramas por condición.",
-        "Expectations validan calidad, no orquestan bucles de tasks.",
-        "Las materialized views no actúan como orquestadores de notebooks."
+        "",
+        "Expectations validan calidad, no orquestan bucles de tasks."
       ],
       "source": "https://docs.databricks.com/aws/en/jobs/tasks/for-each",
       "difficulty": "medium",
       "type": "scenario",
-      "origin": "original basada en documentación oficial"
+      "origin": "original basada en documentación oficial",
+      "reviewedFor": "2026-objective-mapping-and-option-alignment"
     },
     {
       "id": "OF-010",
@@ -245,13 +263,15 @@
       "explanation": "Las modalidades de compute tienen compatibilidades de runtime y librerías distintas, que deben validarse explícitamente.",
       "whyWrong": [
         "No todas las instrucciones de instalación funcionan en todos los tipos de compute.",
+        "",
         "Gobierno UC y dependencias Python son problemas diferentes.",
         "Más workers no corrigen una dependencia ausente o incompatible."
       ],
       "source": "https://docs.databricks.com/aws/en/compute/",
       "difficulty": "medium",
       "type": "scenario",
-      "origin": "original basada en documentación oficial"
+      "origin": "original basada en documentación oficial",
+      "reviewedFor": "2026-objective-mapping-and-option-alignment"
     },
     {
       "id": "OF-011",
@@ -261,22 +281,24 @@
       "stem": "Un test actual solo compara input.count() y output.count(). Se mantiene el recuento aunque la transformación asigna mal los códigos de país. ¿Cómo reforzarlo?",
       "code": "from pyspark.testing.utils import assertDataFrameEqual\nassertDataFrameEqual(actual, expected, checkRowOrder=False)",
       "options": [
+        "Ejecutar OPTIMIZE sobre la tabla de salida.",
         "Incrementar el cluster para ver si desaparece el problema.",
         "Asegurar el esquema con assertSchemaEqual y comparar contenido esperado con assertDataFrameEqual.",
-        "Comprobar solo que el Job finaliza en SUCCESS.",
-        "Ejecutar OPTIMIZE sobre la tabla de salida."
+        "Comprobar solo que el Job finaliza en SUCCESS."
       ],
-      "answer": "B",
+      "answer": "C",
       "explanation": "Los tests deben verificar esquema, valores y casos negativos; el conteo no detecta transformaciones incorrectas que preservan filas.",
       "whyWrong": [
+        "OPTIMIZE cambia layout, no valida la lógica.",
         "Más compute no corrige errores funcionales.",
-        "SUCCESS técnico no implica datos correctos.",
-        "OPTIMIZE cambia layout, no valida la lógica."
+        "",
+        "SUCCESS técnico no implica datos correctos."
       ],
       "source": "https://docs.databricks.com/aws/en/ldp/unit-testing",
       "difficulty": "hard",
       "type": "code",
-      "origin": "original basada en documentación oficial"
+      "origin": "original basada en documentación oficial",
+      "reviewedFor": "2026-objective-mapping-and-option-alignment"
     },
     {
       "id": "OF-012",
@@ -286,22 +308,24 @@
       "stem": "Un stream agrega ventas en ventanas de cinco minutos. Tiene withWatermark('event_time','10 minutes'). ¿Cuál es la interpretación correcta?",
       "code": "events.withWatermark(\"event_time\", \"10 minutes\")\n  .groupBy(F.window(\"event_time\", \"5 minutes\")).count()",
       "options": [
-        "Spark descarta automáticamente cualquier fila 10 minutos más antigua que el reloj del servidor.",
         "El watermark avanza según event-time observado y permite controlar estado y datos tardíos según la operación.",
         "La marca de agua fuerza automáticamente la ordenación global de todos los eventos.",
-        "El watermark elimina duplicados por order_id incluso sin regla de deduplicación."
+        "El watermark elimina duplicados por order_id incluso sin regla de deduplicación.",
+        "Spark descarta automáticamente cualquier fila 10 minutos más antigua que el reloj del servidor."
       ],
-      "answer": "B",
+      "answer": "A",
       "explanation": "El watermark usa el progreso observado de event-time y el retraso tolerado; su efecto exacto depende del operador stateful y del modo de salida.",
       "whyWrong": [
-        "No es un simple reloj de pared restando 10 minutos.",
+        "",
         "Watermark no ordena globalmente los eventos.",
-        "No es una deduplicación de identificadores por sí solo."
+        "No es una deduplicación de identificadores por sí solo.",
+        "No es un simple reloj de pared restando 10 minutos."
       ],
       "source": "https://docs.databricks.com/aws/en/structured-streaming/watermarks",
       "difficulty": "hard",
       "type": "code",
-      "origin": "original basada en documentación oficial"
+      "origin": "original basada en documentación oficial",
+      "reviewedFor": "2026-objective-mapping-and-option-alignment"
     },
     {
       "id": "OF-013",
@@ -311,22 +335,24 @@
       "stem": "La función escribe cada microbatch a una API externa; el proceso cae después de recibir HTTP 200, pero antes de confirmar progreso. ¿Qué riesgo existe?",
       "code": "def send(batch_df, batch_id):\n    # Enviar con clave de idempotencia derivada de batch_id\n    external_api.publish(batch_df, idempotency_key=str(batch_id))",
       "options": [
-        "El progreso se confirma antes de recibir HTTP 200, por lo que no hay riesgo.",
-        "Se puede repetir el mismo batch; la API debe tolerar claves idempotentes o deduplicación por batchId.",
         "Databricks desactiva automáticamente el checkpoint de cualquier foreachBatch.",
-        "La API siempre devuelve HTTP 409 cuando Spark reintenta."
+        "La API siempre devuelve HTTP 409 cuando Spark reintenta.",
+        "El progreso se confirma antes de recibir HTTP 200, por lo que no hay riesgo.",
+        "Se puede repetir el mismo batch; la API debe tolerar claves idempotentes o deduplicación por batchId."
       ],
-      "answer": "B",
+      "answer": "D",
       "explanation": "foreachBatch ofrece al menos una vez: el mismo batchId puede repetirse después de un fallo, por lo que el sink externo debe ser idempotente.",
       "whyWrong": [
-        "No se garantiza exactamente una vez por la respuesta HTTP.",
         "foreachBatch funciona con checkpointing.",
-        "El comportamiento HTTP depende de la API; Spark no impone esa respuesta."
+        "El comportamiento HTTP depende de la API; Spark no impone esa respuesta.",
+        "No se garantiza exactamente una vez por la respuesta HTTP.",
+        ""
       ],
       "source": "https://docs.databricks.com/aws/en/structured-streaming/foreach",
       "difficulty": "hard",
       "type": "code",
-      "origin": "original basada en documentación oficial"
+      "origin": "original basada en documentación oficial",
+      "reviewedFor": "2026-objective-mapping-and-option-alignment"
     },
     {
       "id": "OF-014",
@@ -345,13 +371,15 @@
       "explanation": "El join as-of usa customer_id y un intervalo temporal para asociar el hecho con la versión válida en su fecha de negocio.",
       "whyWrong": [
         "Un join solo por clave puede multiplicar cada compra por todas las versiones.",
+        "",
         "La versión vigente hoy no representa necesariamente la vigente en marzo.",
         "Sobrescribir regiones antiguas rompe las consultas históricas."
       ],
       "source": "https://docs.databricks.com/aws/en/ldp/cdc",
       "difficulty": "hard",
       "type": "code",
-      "origin": "original basada en documentación oficial"
+      "origin": "original basada en documentación oficial",
+      "reviewedFor": "2026-objective-mapping-and-option-alignment"
     }
   ]
 }
