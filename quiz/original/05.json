@@ -131,7 +131,7 @@
         "",
         "Comentarios del catálogo no equilibran particiones."
       ],
-      "source": "https://docs.databricks.com/aws/en/optimizations/query-profile",
+      "source": "https://docs.databricks.com/aws/en/sql/user/queries/query-profile",
       "code": "",
       "difficulty": "medium",
       "type": "scenario",
@@ -212,7 +212,7 @@
         "",
         "Difundir 4 TB sería inviable."
       ],
-      "source": "https://docs.databricks.com/aws/en/optimizations/query-profile",
+      "source": "https://docs.databricks.com/aws/en/sql/user/queries/query-profile",
       "code": "SELECT /*+ BROADCAST(c) */ *\nFROM fact_orders f JOIN dim_country c ON f.country_id=c.id;",
       "difficulty": "hard",
       "type": "code",
