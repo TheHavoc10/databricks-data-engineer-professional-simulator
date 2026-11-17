@@ -88,7 +88,7 @@ async function getBank(){
 async function mount(){
  root=document.querySelector("#qa-root");if(!root)return;
  if(!root.dataset.bound){root.dataset.bound="1";root.addEventListener("click",onClick);root.addEventListener("dblclick",onDouble);root.addEventListener("change",onFilter);}
- try{await getBank();if(root&&root.isConnected&&location.hash.startsWith("#/simulator"))draw();}
+ try{await getBank();if(root&&root.isConnected&&location.hash.startsWith("#/archive"))draw();}
  catch(e){if(root&&root.isConnected)root.querySelector("#qa-view").innerHTML='<div class="qa-warn"><b>Error al cargar:</b> '+esc(e.message)+'. Comprueba que el despliegue incluya la carpeta quiz/candidatos.</div>'}
 }
 window.DE_QUESTION_ARCHIVE={shell,mount};
