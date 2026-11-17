@@ -156,5 +156,16 @@ async function mount(){
  if(state.session?.review){renderReview()}else{render()}if(!interval)interval=setInterval(ticker,1000);
  }catch(e){if(root&&root.isConnected)root.querySelector("#oq-view").innerHTML='<div class="panel oq-error"><h2>Error al cargar preguntas originales</h2><p>'+esc(e.message)+'</p><p>Verifica que GitHub Pages haya publicado la carpeta quiz/original.</p></div>'}
 }
+if(window.addEventListener)window.addEventListener("keydown",function(e){
+ if(!location.hash.startsWith("#/simulator")||!state.session||state.session.finished||e.altKey||e.ctrlKey||e.metaKey)return;
+ if(["INPUT","TEXTAREA","SELECT"].includes(document.activeElement?.tagName))return;
+ const key=e.key.toLowerCase(),s=state.session;
+ const options={"1":"A","2":"B","3":"C","4":"D","a":"A","b":"B","c":"C","d":"D"};
+ if(options[key]){e.preventDefault();pick(options[key]);return;}
+ if(key==="enter"&&s.mode==="study"){e.preventDefault();check();return;}
+ if(key==="arrowright"||key==="n"){if(s.index<s.ids.length-1){s.index++;chooseCache=null;save();render()}e.preventDefault();return;}
+ if(key==="arrowleft"||key==="p"){if(s.index>0){s.index--;chooseCache=null;save();render()}e.preventDefault();return;}
+ if(key==="f"){s.flags[current().id]=!s.flags[current().id];save();render();e.preventDefault();}
+});
 window.DE_ORIGINAL_EXAM={shell,mount};
 })();
