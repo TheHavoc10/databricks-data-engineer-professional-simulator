@@ -1,0 +1,182 @@
+{
+  "domain": "03",
+  "name": "Transformaciones y calidad",
+  "weight": 12,
+  "questions": [
+    {
+      "id": "OF-022",
+      "domain": "03",
+      "objective": "03.01",
+      "title": "JOIN con duplicación de importes",
+      "stem": "fact_orders tiene 100 compras. dim_customer contiene tres versiones históricas de algunos clientes. El JOIN solo por customer_id devuelve 138 filas. ¿Qué corrección preserva el grano de la tabla de hechos?",
+      "options": [
+        "Añadir DISTINCT al resultado, sin estudiar la razón de duplicación.",
+        "Unir por customer_id y la versión de la dimensión vigente a la fecha de cada pedido.",
+        "Incrementar spark.sql.shuffle.partitions para recuperar 100 filas.",
+        "Elegir el último registro de la dimensión independientemente de cuándo ocurrió el pedido."
+      ],
+      "answer": "B",
+      "explanation": "El grano del hecho exige seleccionar exactamente la versión SCD2 válida en el momento de cada compra; un join por clave sin intervalo multiplica filas.",
+      "whyWrong": [
+        "DISTINCT puede ocultar errores y eliminar compras legítimas.",
+        "El particionado Spark cambia rendimiento, no cardinalidad lógica.",
+        "La dimensión actual puede ser incorrecta para hechos históricos."
+      ],
+      "source": "https://docs.databricks.com/aws/en/transform/",
+      "code": "SELECT o.order_id, d.region\nFROM fact_orders o\nJOIN dim_customer d\n ON o.customer_id = d.customer_id\nAND o.order_date >= d.valid_from\nAND (o.order_date < d.valid_to OR d.valid_to IS NULL)",
+      "difficulty": "hard",
+      "type": "code",
+      "origin": "original basada en documentación oficial"
+    },
+    {
+      "id": "OF-023",
+      "domain": "03",
+      "objective": "03.01",
+      "title": "Deduplicación con desempate reproducible",
+      "stem": "Tienes dos eventos de la misma orden con change_version=7 y distinto ingest_ts. ¿Qué orden debe definir row_number() para seleccionar una fila de manera determinista?",
+      "options": [
+        "PARTITION BY order_id sin ORDER BY y confiar en el orden del fichero.",
+        "PARTITION BY order_id ORDER BY change_version DESC, ingest_ts DESC y una columna de desempate única si fuera necesario.",
+        "ORDER BY rand() para repartir uniformemente las filas.",
+        "PARTITION BY change_version y ORDER BY order_id."
+      ],
+      "answer": "B",
+      "explanation": "row_number exige un orden total si los empates importan; version y timestamp por sí solos pueden seguir empatados, por lo que conviene incluir un identificador adicional.",
+      "whyWrong": [
+        "El orden físico de Spark no es estable sin criterio.",
+        "rand() es no determinista.",
+        "La partición debe corresponder a la entidad deduplicada."
+      ],
+      "source": "https://docs.databricks.com/aws/en/transform/",
+      "code": "WITH ranked AS (\n SELECT *, row_number() OVER (\n PARTITION BY order_id\n ORDER BY change_version DESC, ingest_ts DESC, event_id DESC\n ) rn\n FROM bronze_orders\n)\nSELECT * EXCEPT(rn) FROM ranked WHERE rn=1",
+      "difficulty": "hard",
+      "type": "code",
+      "origin": "original basada en documentación oficial"
+    },
+    {
+      "id": "OF-024",
+      "domain": "03",
+      "objective": "03.02",
+      "title": "VARIANT no equivale a string",
+      "stem": "Una columna payload contiene texto JSON. Necesitas extraer order.id como entero y mantener soporte para propiedades no definidas originalmente. ¿Qué enfoque es adecuado?",
+      "options": [
+        "Aplicar parse_json(payload) para convertirlo a VARIANT y variant_get(...,'int') para extraer la ruta.",
+        "Eliminar todas las propiedades desconocidas antes de insertar en Bronze.",
+        "Usar explode(payload) directamente sobre STRING sin parseo.",
+        "Convertir el JSON a CSV para acceder al campo anidado."
+      ],
+      "answer": "A",
+      "explanation": "parse_json devuelve VARIANT y variant_get extrae un valor tipado mediante JSON path; evita tratar contenido semiestructurado como texto opaco.",
+      "whyWrong": [
+        "Eliminar propiedades raw dificulta evolución de esquema.",
+        "explode opera con colecciones, no con un STRING JSON arbitrario.",
+        "CSV no representa fielmente la jerarquía JSON."
+      ],
+      "source": "https://docs.databricks.com/aws/en/sql/language-manual/functions/variant_get",
+      "code": "SELECT variant_get(parse_json('{\"order\":{\"id\":42}}'),\n '$.order.id', 'int') AS id;",
+      "difficulty": "hard",
+      "type": "code",
+      "origin": "original basada en documentación oficial"
+    },
+    {
+      "id": "OF-025",
+      "domain": "03",
+      "objective": "03.02",
+      "title": "Cast inválido en una ruta VARIANT",
+      "stem": "En un JSON, amount='unknown'. Quieres seguir procesando el lote y obtener NULL cuando esa propiedad no puede convertirse a DOUBLE. ¿Qué función se adapta mejor?",
+      "options": [
+        "variant_get(payload, '$.amount','double') porque jamás genera error por cast inválido.",
+        "try_variant_get(payload, '$.amount','double') para tolerar valores no convertibles.",
+        "parse_json(amount) para convertir automáticamente cualquier palabra en DOUBLE.",
+        "coalesce(payload, 0) sin extraer propiedad."
+      ],
+      "answer": "B",
+      "explanation": "try_variant_get retorna NULL cuando el cast solicitado no es posible, permitiendo una política posterior de validación/cuaren­t­ena.",
+      "whyWrong": [
+        "variant_get puede producir un error de casteo ante tipos incompatibles.",
+        "parse_json espera JSON, no transforma palabras arbitrarias a números.",
+        "coalesce no navega ni tipa la ruta anidada."
+      ],
+      "source": "https://docs.databricks.com/aws/en/sql/language-manual/functions/try_variant_get",
+      "code": "SELECT try_variant_get(parse_json('{\"amount\":\"unknown\"}'),\n '$.amount', 'double') AS amount;",
+      "difficulty": "hard",
+      "type": "code",
+      "origin": "original basada en documentación oficial"
+    },
+    {
+      "id": "OF-026",
+      "domain": "03",
+      "objective": "03.03",
+      "title": "ai_query en un proceso ETL",
+      "stem": "Un equipo usa ai_query para clasificar reclamaciones de clientes y almacenar una categoría. ¿Qué control es más importante antes de procesar millones de registros?",
+      "options": [
+        "Dar por hecho que la salida del modelo siempre es estable, precisa y gratuita.",
+        "Comprobar permisos al endpoint, coste por invocación, privacidad, esquema de respuesta y validación de resultados.",
+        "Ejecutar la función mediante VACUUM para disminuir tokens.",
+        "Sustituir todos los valores nulos por respuestas inventadas sin indicador."
+      ],
+      "answer": "B",
+      "explanation": "Las funciones de IA son llamadas a modelos, sujetas a permisos, costes y respuestas que deben validarse; para un pipeline de producción se definen contratos y métricas.",
+      "whyWrong": [
+        "Los modelos pueden variar y tienen costes.",
+        "VACUUM no gestiona inferencias de LLM.",
+        "Inventar etiquetas sin trazabilidad falsea calidad."
+      ],
+      "source": "https://docs.databricks.com/aws/en/sql/language-manual/functions/ai_query",
+      "code": "SELECT ai_query('endpoint_autorizado', concat('Clasifica: ', text))\nFROM dev.silver.complaints;",
+      "difficulty": "hard",
+      "type": "code",
+      "origin": "original basada en documentación oficial"
+    },
+    {
+      "id": "OF-027",
+      "domain": "03",
+      "objective": "03.04",
+      "title": "Expectation con datos inválidos auditables",
+      "stem": "Un pipeline recibe 3% de pedidos con order_id NULL. Deben excluirse de Silver, pero el equipo de cumplimiento exige poder investigarlos. ¿Qué combinación es la más adecuada?",
+      "options": [
+        "EXPECT ... DROP ROW en Silver y conservar los inválidos en Bronze o cuarentena controlada.",
+        "EXPECT ... DROP ROW y eliminar Bronze para no guardar errores.",
+        "EXPECT sin política y asumir que retiene solo las filas válidas.",
+        "FAIL UPDATE en todos los flujos aunque exista una ruta de cuarentena autorizada."
+      ],
+      "answer": "A",
+      "explanation": "DROP elimina registros inválidos del destino regulado; la conservación raw/cuaren­tena permite diagnosticar, reparar y demostrar las incidencias.",
+      "whyWrong": [
+        "Eliminar evidencia impide reparación y auditoría.",
+        "WARN conserva filas inválidas salvo otra transformación.",
+        "FAIL puede ser correcto en casos críticos, pero aquí se pide procesar válidos y retener rechazados."
+      ],
+      "source": "https://docs.databricks.com/aws/en/ldp/expectations",
+      "code": "CREATE OR REFRESH STREAMING TABLE clean_orders(\n CONSTRAINT valid_id EXPECT (order_id IS NOT NULL)\n ON VIOLATION DROP ROW)\nAS SELECT * FROM STREAM(bronze_orders);",
+      "difficulty": "hard",
+      "type": "code",
+      "origin": "original basada en documentación oficial"
+    },
+    {
+      "id": "OF-028",
+      "domain": "03",
+      "objective": "03.04",
+      "title": "WARN, DROP y FAIL en Lakeflow",
+      "stem": "La regla amount>=0 se define con EXPECT sin ON VIOLATION. ¿Qué comportamiento debe esperarse por defecto?",
+      "options": [
+        "La actualización se detiene y revierte automáticamente.",
+        "Los registros que incumplen la regla pueden permanecer en salida y la métrica de calidad registra el incumplimiento.",
+        "Solo las filas inválidas se eliminan automáticamente.",
+        "Se crea automáticamente una tabla de cuarentena con todas las filas inválidas."
+      ],
+      "answer": "B",
+      "explanation": "La política por defecto es warn: mantiene filas e informa métricas de cumplimiento; DROP o FAIL requieren declararse.",
+      "whyWrong": [
+        "FAIL UPDATE debe establecerse explícitamente.",
+        "DROP ROW no es el comportamiento por defecto.",
+        "La tabla de cuarentena debe diseñarse por separado."
+      ],
+      "source": "https://docs.databricks.com/aws/en/ldp/expectation-patterns",
+      "code": "",
+      "difficulty": "medium",
+      "type": "scenario",
+      "origin": "original basada en documentación oficial"
+    }
+  ]
+}
