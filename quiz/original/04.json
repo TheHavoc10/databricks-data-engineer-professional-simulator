@@ -10,23 +10,25 @@
       "title": "DBUs y coste final",
       "stem": "Un analista suma usage_quantity en system.billing.usage para conocer el coste mensual en euros. ¿Cuál es la limitación principal del cálculo?",
       "options": [
-        "usage_quantity equivale siempre a euros facturados.",
         "La tabla muestra uso facturable y unidades; deben aplicarse precios vigentes y considerar otros costes y descuentos.",
         "La tabla solo registra errores de ejecución, no facturación.",
-        "Solo puede calcularse el coste desde el tamaño de las tablas Delta."
+        "Solo puede calcularse el coste desde el tamaño de las tablas Delta.",
+        "usage_quantity equivale siempre a euros facturados."
       ],
-      "answer": "B",
+      "answer": "A",
       "explanation": "system.billing.usage contiene consumo de unidades de productos/SKU; para coste hay que unir con precio aplicable y considerar componentes adicionales.",
       "whyWrong": [
-        "DBUs y euros son unidades diferentes.",
+        "",
         "La tabla se utiliza para consumo facturable.",
-        "El almacenamiento no explica el coste de compute."
+        "El almacenamiento no explica el coste de compute.",
+        "DBUs y euros son unidades diferentes."
       ],
       "source": "https://docs.databricks.com/aws/en/admin/system-tables/billing",
       "code": "SELECT sku_name, SUM(usage_quantity)\nFROM system.billing.usage\nGROUP BY sku_name;",
       "difficulty": "hard",
       "type": "code",
-      "origin": "original basada en documentación oficial"
+      "origin": "original basada en documentación oficial",
+      "reviewedFor": "2026-objective-mapping-and-option-alignment"
     },
     {
       "id": "OF-030",
@@ -35,23 +37,25 @@
       "title": "Histórico de tareas por Job",
       "stem": "Debes detectar qué tareas de 120 Jobs sufren más fallos, incluidas ejecuciones de meses anteriores. ¿Qué fuente permite consulta SQL agregada sin abrir cada Job manualmente?",
       "options": [
-        "system.lakeflow.job_task_run_timeline con la información y permisos necesarios.",
         "SELECT * FROM system.billing.list_prices como único dataset.",
         "DESCRIBE HISTORY de cualquier tabla Gold.",
-        "El nombre de la rama Git del repositorio."
+        "El nombre de la rama Git del repositorio.",
+        "system.lakeflow.job_task_run_timeline con la información y permisos necesarios."
       ],
-      "answer": "A",
+      "answer": "D",
       "explanation": "Las system tables lakeflow conservan actividad y timeline de Jobs/tasks para análisis agregados y correlación operacional.",
       "whyWrong": [
         "Los precios no contienen el estado de cada ejecución.",
         "El histórico Delta guarda commits de una tabla, no ejecuciones de Jobs.",
-        "Git no contiene automáticamente un log de cada task ejecutada."
+        "Git no contiene automáticamente un log de cada task ejecutada.",
+        ""
       ],
       "source": "https://docs.databricks.com/aws/en/admin/system-tables/jobs",
       "code": "",
       "difficulty": "medium",
       "type": "scenario",
-      "origin": "original basada en documentación oficial"
+      "origin": "original basada en documentación oficial",
+      "reviewedFor": "2026-objective-mapping-and-option-alignment"
     },
     {
       "id": "OF-031",
@@ -60,23 +64,25 @@
       "title": "Expectations en event log",
       "stem": "Un pipeline Lakeflow aplica reglas de calidad. El dashboard muestra caída de registros válidos. ¿Dónde investigar por flujo y actualización?",
       "options": [
-        "Los eventos flow_progress del event log y su información de data_quality.expectations.",
-        "Únicamente en los archivos Parquet del catálogo Gold.",
         "En el campo copyright del notebook.",
-        "En la lista de usuarios conectados a la consola."
+        "En la lista de usuarios conectados a la consola.",
+        "Los eventos flow_progress del event log y su información de data_quality.expectations.",
+        "Únicamente en los archivos Parquet del catálogo Gold."
       ],
-      "answer": "A",
+      "answer": "C",
       "explanation": "El event log guarda avances y métricas estructuradas de expectativas que permiten relacionar tasas de rechazo con flows y updates.",
       "whyWrong": [
-        "Gold no expone automáticamente las métricas de reglas.",
         "Metadatos de notebook no reflejan métricas de calidad.",
-        "Usuarios conectados no explican cuántas filas incumplen expectativas."
+        "Usuarios conectados no explican cuántas filas incumplen expectativas.",
+        "",
+        "Gold no expone automáticamente las métricas de reglas."
       ],
       "source": "https://docs.databricks.com/aws/en/ldp/monitor-event-logs",
       "code": "SELECT timestamp, event_type, details\nFROM event_log('id-pipeline')\nWHERE event_type='flow_progress';",
       "difficulty": "hard",
       "type": "code",
-      "origin": "original basada en documentación oficial"
+      "origin": "original basada en documentación oficial",
+      "reviewedFor": "2026-objective-mapping-and-option-alignment"
     },
     {
       "id": "OF-032",
@@ -85,23 +91,25 @@
       "title": "SLA de frescura, Job en verde",
       "stem": "El Job diario completa todas las tasks con éxito, pero Gold no recibe datos desde hace dos días porque la fuente dejó de publicar. ¿Qué control detecta realmente el incumplimiento?",
       "options": [
-        "Alerta sobre fecha máxima de evento o actualización y umbral de frescura, ejecutada periódicamente.",
         "Notificación únicamente cuando la task termina FAILED.",
         "Aumentar el tiempo máximo del Job sin consultar datos.",
-        "Contar la cantidad de notebooks guardados."
+        "Contar la cantidad de notebooks guardados.",
+        "Alerta sobre fecha máxima de evento o actualización y umbral de frescura, ejecutada periódicamente."
       ],
-      "answer": "A",
+      "answer": "D",
       "explanation": "La frescura es una propiedad del dato, independiente del estado de un proceso. Una SQL Alert puede evaluar el lag y notificar si supera el SLO.",
       "whyWrong": [
         "Un Job SUCCESS puede producir cero datos.",
         "Aumentar timeout no detecta falta de novedades.",
-        "El número de notebooks no indica frescura de la tabla."
+        "El número de notebooks no indica frescura de la tabla.",
+        ""
       ],
       "source": "https://docs.databricks.com/aws/en/sql/user/alerts/",
       "code": "SELECT timestampdiff(MINUTE, max(event_time), current_timestamp()) lag_min\nFROM dev.gold.orders;",
       "difficulty": "hard",
       "type": "code",
-      "origin": "original basada en documentación oficial"
+      "origin": "original basada en documentación oficial",
+      "reviewedFor": "2026-objective-mapping-and-option-alignment"
     },
     {
       "id": "OF-033",
@@ -118,6 +126,7 @@
       "answer": "A",
       "explanation": "Las credenciales efectivas de una ejecución programada pueden diferir de las interactivas; los permisos UC se comprueban sobre la identidad de ejecución.",
       "whyWrong": [
+        "",
         "Facturación no concede accesos.",
         "Autoscaling no corrige permisos.",
         "CACHE no altera los privilegios UC."
@@ -126,7 +135,8 @@
       "code": "",
       "difficulty": "medium",
       "type": "scenario",
-      "origin": "original basada en documentación oficial"
+      "origin": "original basada en documentación oficial",
+      "reviewedFor": "2026-objective-mapping-and-option-alignment"
     },
     {
       "id": "OF-034",
@@ -135,23 +145,25 @@
       "title": "API con paginación",
       "stem": "Tu script de monitorización consulta Runs API para un Job activo y siempre registra exactamente los primeros resultados de la lista. ¿Qué error de diseño es más probable?",
       "options": [
+        "Las peticiones GET siempre borran los estados anteriores.",
         "No se ha recorrido la paginación de la API y quedan ejecuciones fuera del resultado.",
         "La API únicamente devuelve un máximo permanente de 10 ejecuciones.",
-        "El checkpoint de Spark impide leer ejecuciones históricas del Job.",
-        "Las peticiones GET siempre borran los estados anteriores."
+        "El checkpoint de Spark impide leer ejecuciones históricas del Job."
       ],
-      "answer": "A",
+      "answer": "B",
       "explanation": "Los endpoints de listado pueden paginar; la integración debe seguir páginas o tokens hasta completar la ventana consultada.",
       "whyWrong": [
+        "Una lectura GET no implica borrar historial.",
+        "",
         "No hay una regla universal que limite toda consulta histórica a diez.",
-        "El checkpoint de Spark no controla la API de Jobs.",
-        "Una lectura GET no implica borrar historial."
+        "El checkpoint de Spark no controla la API de Jobs."
       ],
       "source": "https://docs.databricks.com/aws/en/admin/system-tables/jobs",
       "code": "",
       "difficulty": "medium",
       "type": "scenario",
-      "origin": "original basada en documentación oficial"
+      "origin": "original basada en documentación oficial",
+      "reviewedFor": "2026-objective-mapping-and-option-alignment"
     }
   ]
 }
