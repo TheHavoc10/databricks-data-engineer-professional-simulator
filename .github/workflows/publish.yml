@@ -48,6 +48,9 @@ jobs:
           for n in 01 02 03 04 05 06 07 08 09; do test -s "academy/$n.js" || { echo "Falta la lección de bloque $n"; exit 1; }; done
           cp -R academy _site/academy
           test -s quiz/questions.js || { echo 'Falta questions.js'; exit 1; }
+          test -s quiz/original.js || { echo 'Falta original.js'; exit 1; }
+          test -s quiz/original.css || { echo 'Falta original.css'; exit 1; }
+          for n in 01 02 03 04 05 06 07 08 09; do test -s "quiz/original/$n.json" || { echo "Falta bloque original $n"; exit 1; }; done
           for bank in practica-2025.json simulacro-1-2025.json simulacro-2-2025.json; do test -s "quiz/candidatos/$bank" || { echo "Falta banco $bank"; exit 1; }; done
           cp -R quiz _site/quiz
           touch _site/.nojekyll
@@ -59,6 +62,8 @@ jobs:
           assert 'academy/academy-ui.js' in page
           assert 'academy/masterclass.js' in page
           assert 'quiz/questions.js' in page and 'quiz/questions.css' in page
+          assert 'quiz/original.js' in page and 'quiz/original.css' in page
+          assert len(list(Path('_site/quiz/original').glob('[0-9][0-9].json'))) == 9
           assert 'academy/labs-a.js' in page and 'academy/labs-b.js' in page
           assert len(list(Path('_site/academy').glob('[0-9][0-9].js'))) == 9
           print("Archivos del campus listos para publicación.")
