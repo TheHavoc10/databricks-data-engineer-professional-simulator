@@ -1,0 +1,82 @@
+{
+  "domain": "07",
+  "name": "Gobierno y metadatos",
+  "weight": 5,
+  "questions": [
+    {
+      "id": "OF-049",
+      "domain": "07",
+      "objective": "07.01",
+      "title": "Metadatos para descubrir un dataset",
+      "stem": "Una compañía tiene 300 tablas y varios equipos no saben cuál contiene el ingreso neto consolidado. ¿Qué metadatos mejoran su descubrimiento y comprensión?",
+      "options": [
+        "Comentarios claros, propietario, dominio, etiquetas gobernadas cuando proceda y descripción del grano y uso.",
+        "Cambiar los nombres de todas las tablas por números aleatorios.",
+        "Eliminar los comentarios para reducir el tamaño del catálogo.",
+        "Conceder permisos de administrador global a todos los analistas."
+      ],
+      "answer": "A",
+      "explanation": "La documentación de activos, ownership y tags mejoran discoverability y gobierno sin alterar los datos.",
+      "whyWrong": [
+        "Nombres opacos dificultan el descubrimiento.",
+        "Eliminar descripciones reduce contexto.",
+        "Permisos globales no solucionan metadatos y elevan riesgo."
+      ],
+      "source": "https://docs.databricks.com/aws/en/data-governance/unity-catalog/tags",
+      "code": "",
+      "difficulty": "medium",
+      "type": "scenario",
+      "origin": "original basada en documentación oficial"
+    },
+    {
+      "id": "OF-050",
+      "domain": "07",
+      "objective": "07.02",
+      "title": "Permisos por herencia",
+      "stem": "Un grupo recibe SELECT concedido a nivel de esquema cuando el modelo de privilegios admite herencia. Alguien crea una nueva tabla en ese esquema. ¿Qué riesgo debe evaluarse?",
+      "options": [
+        "La herencia puede dar al grupo SELECT sobre la nueva tabla sin un nuevo GRANT individual.",
+        "Las tablas nuevas se borran si existe un GRANT anterior.",
+        "El grupo recibe automáticamente ownership del metastore.",
+        "El GRANT deja de aplicarse a tablas creadas antes."
+      ],
+      "answer": "A",
+      "explanation": "La concesión a nivel de esquema puede abarcar objetos futuros y simplifica administración, pero exige diseñar bien los ámbitos.",
+      "whyWrong": [
+        "Los grants no crean mecanismos de borrado.",
+        "SELECT no equivale a ownership.",
+        "La herencia no implica revocación automática de tablas previas."
+      ],
+      "source": "https://docs.databricks.com/aws/en/data-governance/unity-catalog/manage-privileges/",
+      "code": "",
+      "difficulty": "medium",
+      "type": "scenario",
+      "origin": "original basada en documentación oficial"
+    },
+    {
+      "id": "OF-051",
+      "domain": "07",
+      "objective": "07.01",
+      "title": "Governed tags frente a tags descriptivos",
+      "stem": "Un administrador necesita clasificar columnas como pii=high para una política ABAC. Otro equipo ha creado etiquetas libres con ese texto. ¿Qué aspecto debe verificar?",
+      "options": [
+        "Que sean governed tags apropiados y que exista una política ABAC que los utilice dentro del ámbito correcto.",
+        "Que el nombre de la etiqueta contenga 'high', porque eso activa la seguridad automáticamente.",
+        "Que los usuarios puedan modificar indiscriminadamente las etiquetas de columnas críticas.",
+        "Que se ejecute OPTIMIZE después de cada cambio de comentario."
+      ],
+      "answer": "A",
+      "explanation": "ABAC utiliza governed tags y políticas definidas; la clasificación y sus permisos de asignación deben estar gobernados.",
+      "whyWrong": [
+        "Una etiqueta no es una regla ejecutable por su nombre.",
+        "Permitir cambios de etiquetas sin control crea riesgo de elusión.",
+        "OPTIMIZE trata datos físicos, no control de tags."
+      ],
+      "source": "https://docs.databricks.com/aws/en/data-governance/unity-catalog/tags",
+      "code": "",
+      "difficulty": "medium",
+      "type": "scenario",
+      "origin": "original basada en documentación oficial"
+    }
+  ]
+}
